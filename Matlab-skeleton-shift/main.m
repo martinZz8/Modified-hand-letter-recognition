@@ -54,7 +54,7 @@ for currInputFolderNameIdx=1:length(inputDataFolderNames)
     
                     % Save skeleton to specified location
                     currSavePath = currOutputFolderName + "/" + letterNames(currLetterNameIdx) + "/" + combineFileName(personNums(currPersonNumIdx), letterNames(currLetterNameIdx));
-                    writematrix(pcShiftedSkeleton.Location, currSavePath, "Delimiter", ' ');
+                    writematrix(pcShiftedSkeleton.Location(:,1:2), currSavePath, "Delimiter", ' ');
                 end
             end            
         end
