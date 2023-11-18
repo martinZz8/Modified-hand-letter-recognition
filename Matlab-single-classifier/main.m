@@ -16,9 +16,9 @@ end
 %% Variables
 % Specifying "inputFileName" value, if not passed as input argument
 defaultInputFileName = "P2_A_M.txt";
-if ~exist('inputFileName','var')
-    disp("Setting default 'inputFileName' to: " + defaultInputFileName);
+if ~exist('inputFileName','var')    
     inputFileName = defaultInputFileName;
+    disp("Setting default 'inputFileName' to: " + inputFileName);
 else
     disp("Using passed 'inputFileName': " + inputFileName);
 end

@@ -3,6 +3,21 @@ close all;
 clear;
 clc;
 
+%% Variables
+% Varaible, if user wants to remove last row in OpenPose (extra, 22th row)
+defaultRemoveLastRowOpenPose = false;
+if ~exist('removeLastRowOpenPose','var')    
+    removeLastRowOpenPose = defaultRemoveLastRowOpenPose;
+    disp("Setting default 'removeLastRowOpenPose' to: " + removeLastRowOpenPose);
+else
+    % Convert string to boolean
+    if ~islogical(removeLastRowOpenPose)
+        removeLastRowOpenPose = str2num(removeLastRowOpenPose);
+    end
+
+    disp("Using passed 'removeLastRowOpenPose': " + removeLastRowOpenPose);
+end
+
 %% load data
 inFName = "input";
 outFName = "output";
@@ -54,7 +69,18 @@ for currInputFolderNameIdx=1:length(inputDataFolderNames)
     
                     % Save skeleton to specified location
                     currSavePath = currOutputFolderName + "/" + letterNames(currLetterNameIdx) + "/" + combineFileName(personNums(currPersonNumIdx), letterNames(currLetterNameIdx));
-                    writematrix(pcShiftedSkeleton.Location(:,1:2), currSavePath, "Delimiter", ' ');
+                    
+                    skeletontoSave = pcShiftedSkeleton.Location(:,1:2);
+                    
+                    % Remove extra row in OpenPose data, if variable is set
+                    if removeLastRowOpenPose == true
+                        if contains(currOutputFolderName, "OpenPose") == true
+                            newLen = length(skeletontoSave) - 1;
+                            skeletontoSave = skeletontoSave(1:newLen, 1:2);
+                        end
+                    end
+                    
+                    writematrix(skeletontoSave, currSavePath, "Delimiter", ' ');
                 end
             end            
         end
