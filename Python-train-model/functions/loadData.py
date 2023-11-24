@@ -1,5 +1,6 @@
 from os import listdir
 from os.path import isfile, join
+from tqdm.auto import tqdm
 
 
 def loadData(useMediaPipe: bool,
@@ -24,17 +25,27 @@ def loadData(useMediaPipe: bool,
 
     loadedSkeletons = [[] for i in range(len(availableLetters))]
 
-    for idx, letter in enumerate(availableLetters):
+    for idx, letter in enumerate(tqdm(availableLetters)):
         pathToLetters = join(pathToData, letter)
-        print(f"letter: {idx}")
+
         onlyFiles = [f for f in listdir(pathToLetters) if isfile(join(pathToLetters, f))]
 
         loadedSingleLetterSkeletons = [[] for i in range(len(onlyFiles))]
         for idx2, fileName in enumerate(onlyFiles):
             with open(join(pathToLetters, fileName), "r") as file:
                 fileContent = file.read()
-                fileContentLines = fileContent.split("\n")
-                fileContentLinesSplitted = list(map(lambda x: x.split(" "), fileContentLines))
+                fileContentLines = list(filter(lambda x: len(x) > 0, fileContent.split("\n")))
+                fileContentLinesSplitted = list(
+                    map(
+                        lambda x: list(
+                            map(
+                                lambda y: float(y),
+                                x.split(" ")
+                            )
+                        ),
+                        fileContentLines
+                    )
+                )
 
                 loadedSingleLetterSkeletons[idx2] = fileContentLinesSplitted
 
