@@ -14,7 +14,7 @@ if ~exist("output", "dir")
 end
 
 %% Variables
-% Specifying "inputFileName" value, if not passed as input argument
+% Specifying "inputFileName" value
 defaultInputFileName = "P2_A_M.txt";
 if ~exist('inputFileName','var')    
     inputFileName = defaultInputFileName;
@@ -23,7 +23,7 @@ else
     disp("Using passed 'inputFileName': " + inputFileName);
 end
 
-% Specifying "isMediaPipe" value, if not passed as input argument
+% Specifying "useMediaPipe" value
 % Note! Change 'useMediaPipe' setting to 'true' or 'false'. It determines whether to use MediaPipe or OpenPose template data
 defaultUseMediaPipe = true;
 if ~exist('useMediaPipe','var')
@@ -35,6 +35,20 @@ else
         useMediaPipe = str2num(useMediaPipe);
     end
     disp("Using passed 'isMediaPipe': " + useMediaPipe);
+end
+
+% Specifying "useShiftedOut" value
+% Note! Change 'useShiftedOut' setting to 'true' or 'false'. It determines determines if saved skeleton will be shifted or not (but always will be transformed using counted parameters from evolutional algorithm)
+defaultUseShiftedOut = true;
+if ~exist('useShiftedOut','var')
+    useShiftedOut = defaultUseShiftedOut;
+    disp("Setting default 'useShiftedOut' to: " + useShiftedOut);
+else
+    % Convert string to boolean
+    if ~islogical(useShiftedOut)
+        useShiftedOut = str2num(useShiftedOut);
+    end
+    disp("Using passed 'useShiftedOut': " + useShiftedOut);
 end
 
 % Output skeleton file name
@@ -101,6 +115,7 @@ if ~exist(inputFilePath, "file")
 end
 
 inputCloud = loadSkeleton("input/" + inputFileName);
+inputShiftedCloud = shiftCloud(inputCloud);
 
 %% Specify evolutional algorithm parameters (simulated annealing)
 lb = [-320; -240; -180; 0.75; 0.75];
@@ -141,9 +156,9 @@ optimizationOptions = optimoptions( ...
 tStart = tic;
 
 rng default; % can be commented
-fitnessFunLambda = @(X) fitnessFunc(X, inputCloud, templateClouds);
+fitnessFunLambda = @(X) fitnessFunc(X, inputShiftedCloud, templateClouds);
 [Xmin, Jmin] = simulannealbnd(fitnessFunLambda, x0, lb, ub, optimizationOptions);
-[~, transformedCloud, winingTemplateIndex] = fitnessFunLambda(Xmin);
+[~, transformedShiftedCloud, winingTemplateIndex] = fitnessFunLambda(Xmin);
 recognizedClass = templateNames{winingTemplateIndex, 1};
 
 % Stop the timer and print time results
@@ -154,19 +169,44 @@ elapsedTimeStr = "Elapsed time of predicting: "+tEndMin+" min "+tEndSec+" sec; I
 disp(elapsedTimeStr);
 
 %% Saving results to files
-% Save transformed input skeleton
-transformedInputCloudToSave = transformedCloud.Location(:, 1:2);
+% Save transformed input skeleton - determine whether to save shifted-transformed or original-transformed data
+transformedCloudToSave = transformedShiftedCloud.Location(:, 1:2);
 
-if useMediaPipe == false % Remove last row when using OpenPose data
-    newLength = length(transformedInputCloudToSave) - 1;
-    transformedInputCloudToSave = transformedInputCloudToSave(1:newLength, 1:2);
+if ~useShiftedOut
+    transformedCloudToSave = fitnessFunBase(Xmin, inputCloud, true).Location(:, 1:2);
 end
 
-transformedInputCloudToSave = round(transformedInputCloudToSave * 100) / 100; % Round number to 2 decimal places
-writematrix(transformedInputCloudToSave, "output/" + outputSkeletonFileName, 'Delimiter', ' ');
+% Remove last row when using OpenPose data
+if useMediaPipe == false
+    newLength = length(transformedCloudToSave) - 1;
+    transformedCloudToSave = transformedCloudToSave(1:newLength, 1:2);
+end
+
+% Round number to 2 decimal places
+transformedCloudToSave = round(transformedCloudToSave * 100) / 100;
+
+% Save transformed (and maybe shifted) skeleton
+writematrix(transformedCloudToSave, "output/" + outputSkeletonFileName, 'Delimiter', ' ');
 
 % Save recognized class
-writelines([recognizedClass; "Input file name: " + inputFileName], "output/" + outputClassifiedLetterFileName, WriteMode="overwrite");
+usedDatasetName = "MediaPipe";
+
+if ~useMediaPipe
+    usedDatasetName = "OpenPose";
+end
+
+isSavedSkeletonShifted = "true";
+
+if ~useShiftedOut
+    isSavedSkeletonShifted = "false";
+end
+
+writelines(["Recognized class: " + recognizedClass; ...
+            "Optimization function arguments [translateX, translateY, rotateZ (degrees), scaleX, scaleY]: " + ['[' sprintf('%g, ', Xmin(1:end-1)) sprintf('%g]', Xmin(end))]; ...
+            "Input file name: " + inputFileName; ...
+            "Used dataset: " + usedDatasetName;  ...
+            "Is output skeleton shifted: " + isSavedSkeletonShifted], ...
+            "output/" + outputClassifiedLetterFileName, WriteMode="overwrite");
 
 disp("Results were saved to output folder");
 disp("**---- END OF SCRIPT ----**");
