@@ -184,7 +184,7 @@ def main(argv):
     # Save model
     statisticsStr = f"Model name: {modelNameToSave}\n\n" \
                     f"Basic data:\n" \
-                    f"a) train ({epochs} epochs in {total_train_time:.2f} sec - cuda {'' if useCuda else 'not'} used):\n" \
+                    f"a) train ({epochs} epochs in {total_train_time:.2f} sec - cuda {'' if useCuda else 'not'}used):\n" \
                     f"- loss: {tracked_train_values[-1]['loss']:.2f}\n" \
                     f"- acc: {tracked_train_values[-1]['acc']:.2f}%\n\n" \
                     f"b) test:\n" \
