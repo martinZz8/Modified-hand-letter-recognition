@@ -1,8 +1,10 @@
 # Standard imports
+from typing import Union
 import sys
 import getopt
 import torch
 from torch import nn
+from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 from functions.loadData import loadData
 from functions.splitTrainTestData import splitTrainTestData
@@ -11,27 +13,32 @@ from functions.plotAccuracy import plotAccuracy
 from functions.accuracyFn import accuracyFn
 from functions.saveModelToFile import saveModelToFile
 from functions.combineAdditionalModelTestData import combineAdditionalModelTestData
+from functions.determineBestModel import determineBestModel
 
-# Train and test steps
+# Train and test steps imports
 from functions.steps.trainStep import trainStep
 from functions.steps.testStep import testStep
 
 # Model imports
-from models.MediaPipeShiftedModelV1 import MediaPipeShiftedModelV1
+from models.UniversalModelV1 import UniversalModelV1
 
 
 def main(argv):
     # --Variables--
-    availableLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'H', 'I', 'L', 'M', 'N', 'O', 'P', 'R', 'W', 'Y']
+    availableLetters: list[str] = ['A', 'B', 'C', 'D', 'E', 'F', 'H', 'I', 'L', 'M', 'N', 'O', 'P', 'R', 'W', 'Y']
 
     # -- Inner option variables --
-    testDataFactor = 0.1
-    torchManualSeedVal = -1
+    testDataFactor: float = 0.1  # default: 0.1
+    torchManualSeedVal: Union[int, None] = None  # default: None
+    trainEpochs: int = 15000  # default: 15000
+    trainBatchSize: int = 16  # default: 16
+    optimizerLearningRate: float = 0.0001  # default: 0001
 
     # --Option variables--
-    useMediaPipe = True
-    useShiftedData = True
-    useCuda = True
+    useMediaPipe: bool = True  # default: True
+    useShiftedData: bool = True  # default: True
+    useCuda: bool = True  # default: True
+    modelRepeats: int = 1  # default: 1
 
     # --Read input arguments and set variables--
     # Note:
@@ -41,8 +48,9 @@ def main(argv):
 
     # Also note, that in second argument of "getopt.getopt()" method (short args) you should provice colon ':' after short argument, if it's with value, otherwise no.
     # Same thing goes to third argument (long args), but with equal sign '='.
-    opts, args = getopt.getopt(argv, "hmosScC",
-                               ["help", "media-pipe", "open-pose", "shifted-data", "no-shifted-data", "cuda", "cpu"])
+    opts, args = getopt.getopt(argv, "hmosScCr:",
+                               ["help", "media-pipe", "open-pose", "shifted-data", "no-shifted-data", "cuda", "cpu",
+                                "model-repeats="])
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):  # help
@@ -53,7 +61,8 @@ def main(argv):
                   '-s, --shifted-data (use shifted data - default)\n'
                   '-S, --no-shifted-data (use non-shifted data)\n'
                   '-c, --cuda (use cuda if available - default)\n'
-                  '-C, --cpu (use cpu)\n\n'
+                  '-C, --cpu (use cpu)'
+                  '-r, --model-repeats (number of model repeats, gets only best model based in train and test acc - default 1)\n\n'
                   'Also note, that you should use only one of the following pair values (otherwise it would be used the least provided):\n'
                   '-m, -o\n'
                   '-s, -S\n'
@@ -71,11 +80,18 @@ def main(argv):
             useCuda = True
         elif opt in ("-C", "--cpu"):  # use cpu
             useCuda = False
+        elif opt in ("-r", "--model-repeats"):  # set modelRepeats value - default 1
+            # Check if "arg" string has integer representation of value (that could be casted to int)
+            if arg.isnumeric():
+                modelRepeats = int(arg)
+            else:
+                raise Exception("'-r' or '--model-repeats' parameter can have argument only of type integer")
 
     print(f"Used options:\n"
           f"- useMediaPipe = {useMediaPipe}\n"
           f"- useShiftedData = {useShiftedData}\n"
-          f"- useCuda = {useCuda}")
+          f"- useCuda = {useCuda}\n"
+          f"- modelRepeats = {modelRepeats}")
 
     # --Set device agnostic code (if user wants to and it's available)--
     deviceStr = "cpu"
@@ -89,123 +105,154 @@ def main(argv):
     loadedData = loadData(useMediaPipe, useShiftedData, availableLetters)
     # print(f"loadedData: {len(loadedData), len(loadedData[0]), len(loadedData[0][0]), len(loadedData[0][0][0])}")
 
-    # -- Split data into training and testing values --
-    XTrain, YTrain, XTest, YTest, allDrawnTestIdxs = splitTrainTestData(loadedData, testDataFactor, True)
-    # print(f"XTrain: {len(XTrain)}\nYTrain: {len(YTrain)}\nXTest: {len(XTest)}\nYTest: {len(YTest)}")
-    # print(f"allDrawnTestIdxs: {allDrawnTestIdxs}")
+    # -- Perform model repeats "modelRepeats" times
+    allModelDatas = []
 
-    # -- Turn data into tensors --
-    XTrainTen = torch.tensor(XTrain).to(deviceStr)
-    YTrainTen = torch.tensor(YTrain).to(deviceStr)
-    XTestTen = torch.tensor(XTest).to(deviceStr)
-    YTestTen = torch.tensor(YTest).to(deviceStr)
+    for i in range(modelRepeats):
+        print(f"** Model repeat number: {i + 1}**")
 
-    # -- Create model --
-    if torchManualSeedVal != -1:
-        torch.manual_seed(torchManualSeedVal)
-        torch.cuda.manual_seed(torchManualSeedVal)
+        # -- Split data into training and testing values --
+        # Note! We also shuffle train and test data (3rd parameter is set to True)
+        XTrain, YTrain, XTest, YTest, allDrawnTestIdxs = splitTrainTestData(loadedData, testDataFactor, True)
+        # print(f"XTrain: {len(XTrain)}\nYTrain: {len(YTrain)}\nXTest: {len(XTest)}\nYTest: {len(YTest)}")
+        # print(f"allDrawnTestIdxs: {allDrawnTestIdxs}")
 
-    modelMediaPipeShiftedV1 = MediaPipeShiftedModelV1(
-        input_shape=len(XTrain[0]) * len(XTrain[0][0]),
-        hidden_units=30,
-        output_shape=len(availableLetters)
-    ).to(deviceStr)
+        # -- Turn train data into iterable batches --
+        # Create list of 2d tuples (where first element of tuple has tensor, second has scalar value)
+        # e.g. inputOfDataLoader = [(tensor([1,2,3], 1)), (torch.tensor([4,5,6]), 2)]
+        # After that, paste it into "DataLoader" class to create iterable batches for training
+        inputOfDataLoader = list(zip([torch.Tensor(singleX) for singleX in XTrain], YTrain))
+        trainDataLoader = DataLoader(dataset=inputOfDataLoader,
+                                     batch_size=trainBatchSize,
+                                     shuffle=False)
 
-    lossFn = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(params=modelMediaPipeShiftedV1.parameters(),
-                                lr=0.0001)
+        # -- Turn data into tensors --
+        # XTrainTen = torch.tensor(XTrain) #.to(deviceStr)
+        # YTrainTen = torch.tensor(YTrain) #.to(deviceStr)
+        XTestTen = torch.tensor(XTest)  # .to(deviceStr)
+        YTestTen = torch.tensor(YTest)  # .to(deviceStr)
 
-    # -- Perform train step --
-    print("2. Training model ...")
-    # Set the number of epochs
-    epochs = 15000
+        # -- Create model --
+        if torchManualSeedVal is not None:
+            torch.manual_seed(torchManualSeedVal)
+            torch.cuda.manual_seed(torchManualSeedVal)
 
-    # Perform training loop
-    if torchManualSeedVal != -1:
-        torch.manual_seed(torchManualSeedVal)
-        torch.cuda.manual_seed(torchManualSeedVal)
+        modelV1 = UniversalModelV1(
+            input_shape=len(XTrain[0]) * len(XTrain[0][0]),
+            output_shape=len(availableLetters)
+        ).to(deviceStr)
 
-    tracked_train_values, total_train_time = trainStep(
-        epochs,
-        modelMediaPipeShiftedV1,
-        XTrainTen,
-        YTrainTen,
-        lossFn,
-        optimizer,
-        accuracyFn
-    )
+        lossFn = nn.CrossEntropyLoss()
+        optimizer = torch.optim.SGD(params=modelV1.parameters(),
+                                    lr=optimizerLearningRate)
 
-    # Print last accuracy
-    print(f"Last train acc: {tracked_train_values[-1]['acc']}")
+        # -- Perform train step --
+        print("2. Training model ...")
 
-    # -- Plot results --
-    # Plot the loss curves
-    plotLossCurves(tracked_train_values)
+        # Perform training loop
+        tracked_train_values_li, total_train_time = trainStep(
+            trainEpochs,
+            modelV1,
+            trainDataLoader,
+            lossFn,
+            optimizer,
+            accuracyFn,
+            deviceStr,
+            torchManualSeedVal
+        )
 
-    # Plot the accuracy
-    plotAccuracy(tracked_train_values)
+        # Print last accuracy
+        print(f"Last train acc: {tracked_train_values_li[-1]['acc']}")
 
-    # -- Perform test step --
-    print("3. Testing model ...")
-    if torchManualSeedVal != -1:
-        torch.manual_seed(torchManualSeedVal)
-        torch.cuda.manual_seed(torchManualSeedVal)
+        # -- Perform test step --
+        print("3. Testing model ...")
 
-    tracked_test_values = testStep(
-        modelMediaPipeShiftedV1,
-        XTestTen,
-        YTestTen,
-        lossFn,
-        accuracyFn
-    )
+        tracked_test_values = testStep(
+            modelV1,
+            XTestTen,
+            YTestTen,
+            lossFn,
+            accuracyFn,
+            deviceStr,
+            torchManualSeedVal
+        )
 
-    print(f"tracked_test_values:\n"
-          f"- model_name: {tracked_test_values['model_name']}\n"
-          f"- loss: {tracked_test_values['loss']}\n"
-          f"- acc: {tracked_test_values['acc']}")
+        print(f"tracked_test_values:\n"
+              f"- model_name: {tracked_test_values['model_name']}\n"
+              f"- loss: {tracked_test_values['loss']}\n"
+              f"- acc: {tracked_test_values['acc']}")
 
-    # -- Perform model save --
-    print("4. Saving model to file ...")
-    # Save model to file and folder with specified name
-    outputDirName = "outputModels"
-    modelNameToSave = "HSRecModel_"
-    modelExtensionName = ".pth"
+        # -- Append model data into "allModelDatas" list --
+        allModelDatas.append({
+            "model": modelV1,
+            "tracked_train_values_li": tracked_train_values_li,
+            "tracked_test_values": tracked_test_values,
+            "total_train_time": total_train_time,
+            "allDrawnTestIdxs": allDrawnTestIdxs
+        })
 
-    if useMediaPipe:
-        modelNameToSave += "M"
+        if i != (modelRepeats - 1):
+            print("\n")
+
+    # -- Determining best model from all models inside "allModelDatas" list
+    print("4. Determining best model ...")
+    bestModelData = determineBestModel(allModelDatas)
+
+    if bestModelData is not None:
+        # -- Plot best results --
+        # Plot the loss curves
+        plotLossCurves(bestModelData["tracked_train_values_li"])
+
+        # Plot the accuracy
+        plotAccuracy(bestModelData["tracked_train_values_li"])
+
+        # -- Perform best model save --
+        print("5. Saving best model to file ...")
+
+        # Save model to file and folder with specified name
+        outputDirName = "outputModels"
+        modelNameToSave = "HSRecModel_"
+        modelExtensionName = ".pth"
+
+        if useMediaPipe:
+            modelNameToSave += "M"
+        else:
+            modelNameToSave += "O"
+
+        if useShiftedData:
+            modelNameToSave += "S"
+        else:
+            modelNameToSave += "O"
+
+        # Save model with additional data to files
+        statisticsStr = f"Model name: {modelNameToSave}\n\n" \
+                        f"Basic data:\n" \
+                        f"a) train ({trainEpochs} epochs in {bestModelData['total_train_time']:.2f} sec - cuda {'' if useCuda else 'not'}used):\n" \
+                        f"- loss: {bestModelData['tracked_train_values_li'][-1]['loss']:.2f}\n" \
+                        f"- acc: {bestModelData['tracked_train_values_li'][-1]['acc']:.2f}%\n\n" \
+                        f"b) test:\n" \
+                        f"- loss: {bestModelData['tracked_test_values']['loss']:.2f}\n" \
+                        f"- acc: {bestModelData['tracked_test_values']['acc']:.2f}%"
+
+        additionalTestDataStr = combineAdditionalModelTestData(bestModelData['allDrawnTestIdxs'],
+                                                               bestModelData['tracked_test_values']["y_true"],
+                                                               bestModelData['tracked_test_values']["y_pred"],
+                                                               availableLetters)
+
+        savedIntoFolderName = saveModelToFile(bestModelData["model"],
+                                              outputDirName,
+                                              modelNameToSave,
+                                              modelExtensionName,
+                                              statisticsStr,
+                                              additionalTestDataStr)
+        print(f"Saved data into folder with name: {savedIntoFolderName}")
     else:
-        modelNameToSave += "O"
-
-    if useShiftedData:
-        modelNameToSave += "S"
-    else:
-        modelNameToSave += "O"
-
-    # Save model
-    statisticsStr = f"Model name: {modelNameToSave}\n\n" \
-                    f"Basic data:\n" \
-                    f"a) train ({epochs} epochs in {total_train_time:.2f} sec - cuda {'' if useCuda else 'not'}used):\n" \
-                    f"- loss: {tracked_train_values[-1]['loss']:.2f}\n" \
-                    f"- acc: {tracked_train_values[-1]['acc']:.2f}%\n\n" \
-                    f"b) test:\n" \
-                    f"- loss: {tracked_test_values['loss']:.2f}\n" \
-                    f"- acc: {tracked_test_values['acc']:.2f}%"
-
-    additionalTestDataStr = combineAdditionalModelTestData(allDrawnTestIdxs,
-                                                           tracked_test_values["y_true"],
-                                                           tracked_test_values["y_pred"],
-                                                           availableLetters)
-
-    saveModelToFile(modelMediaPipeShiftedV1,
-                    outputDirName,
-                    modelNameToSave,
-                    modelExtensionName,
-                    statisticsStr,
-                    additionalTestDataStr)
+        print("ERROR: Couldn't determine best model. No data was saved into files.")
 
 
 if __name__ == "__main__":
     main(sys.argv[1:])
     print("-- END OF SCRIPT --")
+
     # -- Show plots --
     plt.show()

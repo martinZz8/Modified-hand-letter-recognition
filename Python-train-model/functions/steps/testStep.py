@@ -1,3 +1,4 @@
+from typing import Union
 import torch
 
 
@@ -5,8 +6,18 @@ def testStep(model: torch.nn.Module,
              X_test_data: torch.Tensor,
              y_test_data: torch.Tensor,
              loss_fn: torch.nn.Module,
-             accuracy_fn):
+             accuracy_fn,
+             device: Union[torch.device, str] = "cpu",
+             torchManualSeedVal: Union[int, None] = None):
     """Returns a dictionary containing the results of model predicting on data_loader."""
+    # Set torch seed (if "torchManualSeedVal" is setted)
+    if torchManualSeedVal is not None:
+        torch.manual_seed(torchManualSeedVal)
+        torch.cuda.manual_seed(torchManualSeedVal)
+
+    # Turn data into proper device
+    X_test_data, y_test_data = X_test_data.to(device), y_test_data.to(device)
+
     # Put model into training mode
     model.eval()
 

@@ -63,3 +63,5 @@ def saveModelToFile(model: torch.nn.Module,
 
         with open(join(outputDirName, combinedFolderName, txtFileName), "w") as file:
             file.write(addTestDataToSave)
+
+    return combinedFolderName

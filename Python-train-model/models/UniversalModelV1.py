@@ -2,10 +2,9 @@ import torch
 from torch import nn
 
 
-class MediaPipeShiftedModelV1(nn.Module):
+class UniversalModelV1(nn.Module):
     def __init__(self,
                  input_shape: int,
-                 hidden_units: int,
                  output_shape: int):
         super().__init__()
         self.layer_stack = nn.Sequential(
