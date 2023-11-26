@@ -1,5 +1,5 @@
 IMPORTANT NOTES!
-1.In "outputModels" folder, learned models have following characters: <CNN_utility><shifting><model_version>, where:
+1.In "outputModels" folder, learned models have the following characters: <CNN_utility><shifting><model_version>, where:
 - "CNN_utility" is either MediaPipe (S) or OpenPose (O),
 - "shifting" is either shift (S) or no shift - original (O),
 - "model_version" is integer from 1 to infinity

@@ -33,7 +33,7 @@ def main(argv):
     modelVersion: int = 1  # default: 1
     modelClassName: str = "UniversalModelV1"  # default: "UniversalModelV1"
     inputSkeletonFileName: str = "inputSkeletonMS_A6.txt"  # default: "inputSkeletonMS_A6.txt"
-    useCuda: bool = True  # default: True
+    useCuda: bool = False  # default: False - it's faster for single evaluation to use CPU than GPU (moving data to GPU - CUDA costs more than evaluation benefits gained from it)
 
     # --Read input arguments and set variables--
     useMediaPipe, useShiftedData, modelVersion, modelClassName, inputSkeletonFileName, useCuda = getArgumentOptionsEval(argv,
