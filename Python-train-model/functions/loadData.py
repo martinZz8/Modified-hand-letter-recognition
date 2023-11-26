@@ -1,6 +1,7 @@
 from os import listdir
 from os.path import isfile, join
 from tqdm.auto import tqdm
+from formatInlineSkeleton import formatInlineSkeleton
 
 
 def loadData(useMediaPipe: bool,
@@ -34,20 +35,7 @@ def loadData(useMediaPipe: bool,
         for idx2, fileName in enumerate(onlyFiles):
             with open(join(pathToLetters, fileName), "r") as file:
                 fileContent = file.read()
-                fileContentLines = list(filter(lambda x: len(x) > 0, fileContent.split("\n")))
-                fileContentLinesSplitted = list(
-                    map(
-                        lambda x: list(
-                            map(
-                                lambda y: float(y),
-                                x.split(" ")
-                            )
-                        ),
-                        fileContentLines
-                    )
-                )
-
-                loadedSingleLetterSkeletons[idx2] = fileContentLinesSplitted
+                loadedSingleLetterSkeletons[idx2] = formatInlineSkeleton(fileContent)
 
         loadedSkeletons[idx] = loadedSingleLetterSkeletons
 

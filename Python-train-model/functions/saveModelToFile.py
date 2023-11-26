@@ -9,7 +9,7 @@ def saveModelToFile(model: torch.nn.Module,
                     partialModelName: str,
                     modelExtensionName: str,
                     statisticsStr: str = "",
-                    addTestDataToSave: str = ""):
+                    addTestDataToSaveStr: str = ""):
     # Create outer folder if doesn't exist
     if not exists(outputDirName):
         makedirs(outputDirName)
@@ -23,7 +23,7 @@ def saveModelToFile(model: torch.nn.Module,
     # Search for biggest number inside this folder
     biggestNum = None
     if len(onlyInnerFolders) > 0:
-        folderVersions = list(
+        folderNamesAndVersions = list(
             filter(
                 lambda y: len(y) > 1 and y[1] != "",
                 map(
@@ -33,8 +33,8 @@ def saveModelToFile(model: torch.nn.Module,
             )
         )
 
-        if len(folderVersions) > 0:
-            folderVersionNumbers = list(map(lambda x: int(x[1]), folderVersions))
+        if len(folderNamesAndVersions) > 0:
+            folderVersionNumbers = list(map(lambda x: int(x[1]), folderNamesAndVersions))
             biggestNum = functools.reduce(lambda acc, x: x if x > acc else acc, folderVersionNumbers)
 
     # Determine number to use
@@ -58,10 +58,10 @@ def saveModelToFile(model: torch.nn.Module,
             file.write(statisticsStr)
 
     # Save additional data to file
-    if addTestDataToSave != "":
+    if addTestDataToSaveStr != "":
         txtFileName = "additionalTestData.txt"
 
         with open(join(outputDirName, combinedFolderName, txtFileName), "w") as file:
-            file.write(addTestDataToSave)
+            file.write(addTestDataToSaveStr)
 
     return combinedFolderName

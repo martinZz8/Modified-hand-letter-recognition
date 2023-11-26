@@ -9,7 +9,7 @@ def testStep(model: torch.nn.Module,
              accuracy_fn,
              device: Union[torch.device, str] = "cpu",
              torchManualSeedVal: Union[int, None] = None):
-    """Returns a dictionary containing the results of model predicting on data_loader."""
+    """Returns a dictionary containing the results of model predicting on "X_test_data"."""
     # Set torch seed (if "torchManualSeedVal" is setted)
     if torchManualSeedVal is not None:
         torch.manual_seed(torchManualSeedVal)
@@ -18,7 +18,7 @@ def testStep(model: torch.nn.Module,
     # Turn data into proper device
     X_test_data, y_test_data = X_test_data.to(device), y_test_data.to(device)
 
-    # Put model into training mode
+    # Put model into testing mode
     model.eval()
 
     # Turn on inference mode context manager

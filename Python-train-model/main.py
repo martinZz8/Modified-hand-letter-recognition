@@ -5,6 +5,11 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
+
+# Custom consts imports
+from consts.consts import availableLetters
+
+# Custom functions imports
 from functions.getArgumentOptions import getArgumentOptions
 from functions.loadData import loadData
 from functions.splitTrainTestData import splitTrainTestData
@@ -15,7 +20,7 @@ from functions.saveModelToFile import saveModelToFile
 from functions.combineAdditionalModelTestData import combineAdditionalModelTestData
 from functions.determineBestModel import determineBestModel
 
-# Train and test steps imports
+# Custom train and test steps imports
 from functions.steps.trainStep import trainStep
 from functions.steps.testStep import testStep
 
@@ -25,7 +30,8 @@ from models.UniversalModelV1 import UniversalModelV1
 
 def main(argv):
     # --Variables--
-    availableLetters: list[str] = ['A', 'B', 'C', 'D', 'E', 'F', 'H', 'I', 'L', 'M', 'N', 'O', 'P', 'R', 'W', 'Y']
+    # Note! (Variable moved to "consts/consts.py" file)
+    # availableLetters: list[str] = ['A', 'B', 'C', 'D', 'E', 'F', 'H', 'I', 'L', 'M', 'N', 'O', 'P', 'R', 'W', 'Y']
 
     # -- Inner option variables --
     testDataFactor: float = 0.1  # default: 0.1

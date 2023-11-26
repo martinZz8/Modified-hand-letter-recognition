@@ -1,6 +1,7 @@
 # PyCharm folder
 .idea
+consts/__pycache__
 functions/__pycache__
 functions/steps/__pycache__
 models/__pycache__
-/outputModels
+outputModels
