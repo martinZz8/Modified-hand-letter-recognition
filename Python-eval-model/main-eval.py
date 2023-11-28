@@ -33,17 +33,19 @@ def main(argv):
     modelVersion: int = 1  # default: 1
     modelClassName: str = "UniversalModelV1"  # default: "UniversalModelV1"
     inputSkeletonFileName: str = "inputSkeletonMS_A6.txt"  # default: "inputSkeletonMS_A6.txt"
+    outputFileName: str = ""  # default: "" stands for auto incremented file name
     useCuda: bool = False  # default: False - it's faster for single evaluation to use CPU than GPU (moving data to GPU - CUDA costs more than evaluation benefits gained from it)
 
     # --Read input arguments and set variables--
-    useMediaPipe, useShiftedData, modelVersion, modelClassName, inputSkeletonFileName, useCuda = getArgumentOptionsEval(argv,
-                                                                                                                        useMediaPipe,
-                                                                                                                        useShiftedData,
-                                                                                                                        modelVersion,
-                                                                                                                        modelClassName,
-                                                                                                                        inputSkeletonFileName,
-                                                                                                                        useCuda)
-    # --Set device agnostic code (if user wants to and it's available)--
+    useMediaPipe, useShiftedData, modelVersion, modelClassName, inputSkeletonFileName, outputFileName, useCuda = getArgumentOptionsEval(argv,
+                                                                                                                                        useMediaPipe,
+                                                                                                                                        useShiftedData,
+                                                                                                                                        modelVersion,
+                                                                                                                                        modelClassName,
+                                                                                                                                        inputSkeletonFileName,
+                                                                                                                                        outputFileName,
+                                                                                                                                        useCuda)
+        # --Set device agnostic code (if user wants to and it's available)--
     deviceStr = "cpu"
     if useCuda and torch.cuda.is_available():
         deviceStr = "cuda"
@@ -112,6 +114,7 @@ def main(argv):
                     f"Used model class name: {modelClassName}"
 
     savedIntoFileName = saveEvalResultsToFile(outputFolderName,
+                                              outputFileName,
                                               statisticsStr)
 
     print(f"Saved results into file with name: {savedIntoFileName}")
