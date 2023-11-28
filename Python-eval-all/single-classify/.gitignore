@@ -1,2 +1,9 @@
 input
 output
+functions/__pycache__
+functions/skeletons/MediaPipe/__pycache__
+functions/skeletons/MediaPipe/outputTemp
+functions/skeletons/OpenPose/__pycache__
+functions/skeletons/OpenPose/outputTemp
+functions/skeletons/OpenPose/opencv_world452.dll
+functions/skeletons/OpenPose/hand
