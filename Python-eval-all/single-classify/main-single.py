@@ -11,6 +11,7 @@ from functions.skeletons.OpenPose.getOpenPoseSk import getOpenPoseSk
 from functions.resizeImage import resizeImage
 from functions.rescaleSkeleton import rescaleSkeleton
 from functions.preprocessing.getMatlabPreprocessedSkeleton import getMatlabPreprocessedSkeleton
+from functions.preprocessing.locallyShiftSkeleton import locallyShiftSkeleton
 from functions.classify.getPyTorchClassification import getPyTorchClassification
 from functions.classify.copyAndGetResultsOfClassify import copyAndGetResultsOfClassify
 
@@ -88,11 +89,17 @@ def main(argv):
     # --Run "Matlab-single-classifier" preprocessing (skeleton transformation script) - if "useMatlabPreprocessing" is True--
     skeletonFromCopyPath = outputTxtFilePath
     if useMatlabPreprocessing:
+        print(f"1.6. Performing Matlab skeleton preprocessing ...")
         skeletonFromCopyPath = getMatlabPreprocessedSkeleton(outputTxtFilePath,
                                                              useMediaPipe,
                                                              useShiftedData)
+    elif useShiftedData:
+        # If Matlab preprocessing is disabled, but we want to shift our data, we can perform it using our method
+        print(f"1.6. Performing local skeleton shift ...")
+        locallyShiftSkeleton(skeletonFromCopyPath, useMediaPipe)
 
     # --Run "Python-eval-model" script to classify skeleton by PyTorch's model--
+    print(f"1.7. Getting PyTorch classification ...")
     outputClassifyFilePath = getPyTorchClassification(skeletonFromCopyPath,
                                                       "results.txt",
                                                       useMediaPipe,
@@ -100,6 +107,7 @@ def main(argv):
                                                       useCuda)
 
     # -- Read results of classification by "Python-eval-model" script
+    print(f"1.8. Copying results of classification and printing them out ...")
     resultsOfClassify = copyAndGetResultsOfClassify(outputClassifyFilePath)
 
     print(resultsOfClassify)
@@ -107,4 +115,4 @@ def main(argv):
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-    print("-- END OF SCRIPT --")
+    print("-- END OF 'main.single.py' SCRIPT --")
