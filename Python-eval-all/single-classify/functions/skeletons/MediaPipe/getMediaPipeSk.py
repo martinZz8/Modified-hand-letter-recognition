@@ -1,7 +1,7 @@
 # Standard imports
+import sys
 import cv2
 import mediapipe as mp
-from os.path import relpath
 from os.path import dirname, join as joinpath
 
 
@@ -18,10 +18,12 @@ def hasFileNameProperExtension(fileName: str,
 
 
 # Note! use try...except block while running this function and want to skip images from which skeletons couldn't be determined
-def getMediaPipeSk(input_file_name: str,
+def getMediaPipeSk(input_image_file_path: str,
                    is_save_image_with_skeleton: bool = False,
                    is_draw_skeleton: bool = False):
     # -- Determine if "inputFileName" has proper extension --
+    splitted_image_file_path = input_image_file_path.split("\\")
+    input_file_name = splitted_image_file_path[len(splitted_image_file_path)-1]
     can_continue = hasFileNameProperExtension(input_file_name, [".png", ".jpg", ".jpeg", ".bmp"])
 
     if not can_continue:
@@ -68,16 +70,17 @@ def getMediaPipeSk(input_file_name: str,
     model_complexity = 1  # 0 or 1 (default 1)
 
     # -- Defining folder names -- (these folder have to be created!)
-    IMAGES_FN = joinpath(
-        dirname(
-            dirname(
-                dirname(
-                    dirname(__file__)
-                )
-            )
-        ),
-        "input"
-    )
+    # IMAGES_FN = joinpath(
+    #     dirname(
+    #         dirname(
+    #             dirname(
+    #                 dirname(__file__)
+    #             )
+    #         )
+    #     ),
+    #     "input"
+    # )
+    IMAGES_FN = "\\".join(splitted_image_file_path[0:len(splitted_image_file_path)-1])
 
     SKELETONS_FN = joinpath(dirname(__file__), "outputTemp")
 

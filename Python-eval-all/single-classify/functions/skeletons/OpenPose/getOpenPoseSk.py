@@ -1,6 +1,10 @@
 # Standard imports
+import sys
 from os.path import dirname, join
 import subprocess
+
+sys.path.append(dirname(__file__))
+from replaceCharactersInFile import replaceCharactersInFile
 
 
 def hasFileNameProperExtension(inputFileName: str,
@@ -15,8 +19,10 @@ def hasFileNameProperExtension(inputFileName: str,
     return isProper
 
 
-def getOpenPoseSk(inputFileName: str):
+def getOpenPoseSk(inputImageFilePath: str):
     # -- Determine if "inputFileName" has proper extension --
+    splittedImageFilePath = inputImageFilePath.split("\\")
+    inputFileName = splittedImageFilePath[len(splittedImageFilePath) - 1]
     can_continue = hasFileNameProperExtension(inputFileName, [".png", ".jpg", ".jpeg", ".bmp"])
 
     if not can_continue:
@@ -30,7 +36,7 @@ def getOpenPoseSk(inputFileName: str):
     # -- Prepare file paths --
     splittedFileName = inputFileName.split(".")
     fileNameWoExt = ".".join(splittedFileName[0:(len(splittedFileName) - 1)])
-    inputFilePath = "../../../input/"+inputFileName
+    inputFilePath = inputImageFilePath  # "../../../input/"+inputFileName
     outputFilePath = "outputTemp/" + fileNameWoExt + ".txt"
 
     # -- Run OpenPose exec --
@@ -42,6 +48,11 @@ def getOpenPoseSk(inputFileName: str):
 
     ls_output = subprocess.Popen([pathToExec, inputFilePath, outputFilePath], cwd=cwd)
     ls_output.communicate()  # Will block for 30 seconds
+
+    # -- Replace in saved skeleton "\t" with " " (tab with space) --
+    # Since "GetOpenPoseSkeleton.exe" file uses "\t" as delimiter
+    pathToOutputFile = join(dirname(__file__), "outputTemp", fileNameWoExt + ".txt")
+    replaceCharactersInFile(pathToOutputFile, "\t", " ", True)
 
     print("End of 'getOpenPoseSk.py' function")
 
