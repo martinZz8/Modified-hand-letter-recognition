@@ -10,6 +10,9 @@ from functions.skeletons.MediaPipe.getMediaPipeSk import getMediaPipeSk
 from functions.skeletons.OpenPose.getOpenPoseSk import getOpenPoseSk
 from functions.resizeImage import resizeImage
 from functions.rescaleSkeleton import rescaleSkeleton
+from functions.preprocessing.getMatlabPreprocessedSkeleton import getMatlabPreprocessedSkeleton
+from functions.classify.getPyTorchClassification import getPyTorchClassification
+from functions.classify.copyAndGetResultsOfClassify import copyAndGetResultsOfClassify
 
 
 def main(argv):
@@ -35,6 +38,7 @@ def main(argv):
                                                                                                                                               inputImageName,
                                                                                                                                               useImageResize,
                                                                                                                                               useCuda)
+
     # Specify "inputImageFilePath"
     if inputFolderPath != "":
         inputImageFilePath = join(inputFolderPath, inputImageName)
@@ -81,10 +85,24 @@ def main(argv):
                         desiredImageWidth,
                         desiredImageHeight)
 
-    # --Run Matlab preprocessing (skeleton transformation script) - if "useMatlabPreprocessing" is True--
+    # --Run "Matlab-single-classifier" preprocessing (skeleton transformation script) - if "useMatlabPreprocessing" is True--
+    skeletonFromCopyPath = outputTxtFilePath
     if useMatlabPreprocessing:
-        # TODO
-        pass
+        skeletonFromCopyPath = getMatlabPreprocessedSkeleton(outputTxtFilePath,
+                                                             useMediaPipe,
+                                                             useShiftedData)
+
+    # --Run "Python-eval-model" script to classify skeleton by PyTorch's model--
+    outputClassifyFilePath = getPyTorchClassification(skeletonFromCopyPath,
+                                                      "results.txt",
+                                                      useMediaPipe,
+                                                      useShiftedData,
+                                                      useCuda)
+
+    # -- Read results of classification by "Python-eval-model" script
+    resultsOfClassify = copyAndGetResultsOfClassify(outputClassifyFilePath)
+
+    print(resultsOfClassify)
 
 
 if __name__ == "__main__":

@@ -58,7 +58,7 @@ def main(argv):
     if useCuda and torch.cuda.is_available():
         deviceStr = "cuda"
     else:
-        print(f"WARNING: CUDA isn't used, since it's unavailable on this device. Using CPU.")
+        print(f"WARNING: CUDA isn't used{', since its unavailable on this device' if (not torch.cuda.is_available()) and useCuda else ''}. Using CPU.")
 
     # --Load data--
     print("1. Loading data ...")

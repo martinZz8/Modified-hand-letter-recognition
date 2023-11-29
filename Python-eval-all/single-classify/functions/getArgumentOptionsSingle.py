@@ -69,6 +69,10 @@ def getArgumentOptionsSingle(argv,
         elif opt in ("-C", "--cpu"):  # use cpu
             useCuda = False
 
+    # Swap "useShiftedData" to False, when "useMatlabPreprocessing" is False - shifting cannot be performed when preprocessing isn't performed
+    if not useMatlabPreprocessing:
+        useShiftedData = False
+
     print(f"Used options:\n"
           f"- useMediaPipe = {useMediaPipe}\n"
           f"- useMatlabPreprocessing = {useMatlabPreprocessing}\n"

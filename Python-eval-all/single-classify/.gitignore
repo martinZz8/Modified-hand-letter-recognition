@@ -7,3 +7,5 @@ functions/skeletons/OpenPose/__pycache__
 functions/skeletons/OpenPose/outputTemp
 functions/skeletons/OpenPose/opencv_world452.dll
 functions/skeletons/OpenPose/hand
+functions/classify/__pycache__
+functions/preprocessing/__pycache__

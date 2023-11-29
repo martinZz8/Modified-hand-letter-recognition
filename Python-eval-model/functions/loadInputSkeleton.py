@@ -5,6 +5,7 @@ from functions.formatInlineSkeleton import formatInlineSkeleton
 def loadInputSkeleton(folderName: str,
                       fileName: str) -> list:
     pathToInputFile = join(folderName, fileName)
+
     if isfile(pathToInputFile):
         with open(pathToInputFile, "r") as file:
             fileContent = file.read()

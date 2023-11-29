@@ -209,4 +209,4 @@ writelines(["Recognized class: " + recognizedClass; ...
             "output/" + outputClassifiedLetterFileName, WriteMode="overwrite");
 
 disp("Results were saved to output folder");
-disp("**---- END OF SCRIPT ----**");
+disp("**---- END OF MATLAB SCRIPT ----**");

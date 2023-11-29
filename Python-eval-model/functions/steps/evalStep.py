@@ -36,7 +36,8 @@ def evalStep(model: torch.nn.Module,
     # Print train time if "print_time" is set to True
     total_eval_time_model = countAndPrintElapsedTime(start=eval_time_start_on_device,
                                                      end=eval_time_stop_on_device,
-                                                     device=str(next(model.parameters()).device))
+                                                     device=str(next(model.parameters()).device),
+                                                     isTrain=False)
 
     return {
         "model_name": model.__class__.__name__,  # only works when model was created with a class
