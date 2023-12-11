@@ -4,6 +4,10 @@ import cv2
 import mediapipe as mp
 from os.path import dirname, join as joinpath
 
+sys.path.append(dirname(__file__))
+from exceptions.ErrorInputFileExtension import ErrorInputFileExtension
+from exceptions.ErrorLandmarkDetection import ErrorLandmarkDetection
+
 
 def hasFileNameProperExtension(fileName: str,
                                properFileExtensions: list[str]):
@@ -18,6 +22,7 @@ def hasFileNameProperExtension(fileName: str,
 
 
 # Note! use try...except block while running this function and want to skip images from which skeletons couldn't be determined
+# Custom exceptions to handle: "ErrorInputFileExtension", "ErrorLandmarkDetection"
 def getMediaPipeSk(input_image_file_path: str,
                    is_save_image_with_skeleton: bool = False,
                    is_draw_skeleton: bool = False):
@@ -27,7 +32,7 @@ def getMediaPipeSk(input_image_file_path: str,
     can_continue = hasFileNameProperExtension(input_file_name, [".png", ".jpg", ".jpeg", ".bmp"])
 
     if not can_continue:
-        raise Exception("Input file doesn't have proper extension. Supported extensions: ['.png', '.jpg', '.jpeg', '.bmp']")
+        raise ErrorInputFileExtension("Input file doesn't have proper extension. Supported extensions: ['.png', '.jpg', '.jpeg', '.bmp']")
 
     # -- Constants definitions --
     mp_drawing = mp.solutions.drawing_utils
@@ -114,7 +119,7 @@ def getMediaPipeSk(input_image_file_path: str,
                 min_detection_confidence -= 0.1
 
                 if min_detection_confidence < 0.0:
-                    raise Exception(f"Error: Couldn't recognize hand landmark at 'min_detection_confidence'=0.0")
+                    raise ErrorLandmarkDetection(f"Error: Couldn't recognize hand landmark at 'min_detection_confidence'=0.0")
 
                 continue
             else:

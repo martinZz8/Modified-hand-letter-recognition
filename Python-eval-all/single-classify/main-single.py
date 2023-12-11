@@ -14,6 +14,8 @@ from functions.preprocessing.getMatlabPreprocessedSkeleton import getMatlabPrepr
 from functions.preprocessing.locallyShiftSkeleton import locallyShiftSkeleton
 from functions.classify.getPyTorchClassification import getPyTorchClassification
 from functions.classify.copyAndGetResultsOfClassify import copyAndGetResultsOfClassify
+from functions.skeletons.MediaPipe.exceptions.ErrorInputFileExtension import ErrorInputFileExtension
+from functions.skeletons.MediaPipe.exceptions.ErrorLandmarkDetection import ErrorLandmarkDetection
 
 
 def main(argv):
@@ -73,7 +75,11 @@ def main(argv):
     # Note!: If image was resized before (useImageResize=True), skeleton provided in "outputTemp" folder of either OpenPose or MediaPipe libraries has "_res.txt" suffix.
     if useMediaPipe:
         print(f"1. Getting skeleton using MediaPipe ...")
-        outputTxtFilePath = getMediaPipeSk(inputImageFilePath)
+        try:
+            outputTxtFilePath = getMediaPipeSk(inputImageFilePath)
+        except (ErrorInputFileExtension, ErrorLandmarkDetection) as e:
+            print("Error during determining MediaPipe's skeleton. Terminating program abnormally.")
+            sys.exit(-1)
     else:
         print(f"1. Getting skeleton using OpenPose ...")  # old: inputImageName
         outputTxtFilePath = getOpenPoseSk(inputImageFilePath)  # old: inputImageName
@@ -96,7 +102,7 @@ def main(argv):
                                                              useMediaPipe,
                                                              useShiftedData)
     elif useShiftedData:
-        # If Matlab preprocessing is disabled, but we want to shift our data, we can perform it using our method
+        # If Matlab preprocessing is disabled, but we want to shift our data, we can perform it using our Python's method
         print(f"1.6. Performing local skeleton shift ...")
         locallyShiftSkeleton(skeletonFromCopyPath, useMediaPipe)
 
@@ -118,3 +124,4 @@ def main(argv):
 if __name__ == "__main__":
     main(sys.argv[1:])
     print("-- END OF 'main.single.py' SCRIPT --")
+

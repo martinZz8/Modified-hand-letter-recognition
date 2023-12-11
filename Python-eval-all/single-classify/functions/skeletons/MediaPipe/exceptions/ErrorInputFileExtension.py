@@ -1,0 +1,2 @@
+class ErrorInputFileExtension(Exception):
+    pass

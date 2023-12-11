@@ -4,6 +4,7 @@ from os.path import dirname, join
 import subprocess
 
 sys.path.append(dirname(__file__))
+sys.path.append(dirname(dirname(__file__)))
 from replaceCharactersInFile import replaceCharactersInFile
 
 

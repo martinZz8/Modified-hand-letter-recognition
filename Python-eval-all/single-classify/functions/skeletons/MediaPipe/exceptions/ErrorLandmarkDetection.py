@@ -1,0 +1,2 @@
+class ErrorLandmarkDetection(Exception):
+    pass
