@@ -3,7 +3,7 @@ import sys
 from os.path import isfile, dirname, join
 
 # Custom functions imports
-sys.path.append(join(dirname(__file__), "functions"))  # important - it not used, "rescaleSkeleton" module is not found
+sys.path.append(join(dirname(__file__), "functions"))  # important - if not used, "rescaleSkeleton" module is not found
 
 from functions.getArgumentOptionsSingle import getArgumentOptionsSingle
 from functions.skeletons.MediaPipe.getMediaPipeSk import getMediaPipeSk
@@ -12,6 +12,7 @@ from functions.resizeImage import resizeImage
 from functions.rescaleSkeleton import rescaleSkeleton
 from functions.preprocessing.getMatlabPreprocessedSkeleton import getMatlabPreprocessedSkeleton
 from functions.preprocessing.locallyShiftSkeleton import locallyShiftSkeleton
+from functions.preprocessing.fileRemoveLastRowInSkeleton import fileRemoveLastRowInSkeleton
 from functions.classify.getPyTorchClassification import getPyTorchClassification
 from functions.classify.copyAndGetResultsOfClassify import copyAndGetResultsOfClassify
 from functions.skeletons.MediaPipe.exceptions.ErrorInputFileExtension import ErrorInputFileExtension
@@ -29,18 +30,20 @@ def main(argv):
     useShiftedData: bool = True  # default: True
     inputFolderPath: str = ""  # default: ""
     inputImageName: str = "P2_A.bmp"  # default: "P2_A.bmp"
-    useImageResize: bool = False  # default: False (use image rescale - True, or skeleton rescale, considered as better one - False)
+    outputFileName: str = "results.txt"  # default: "results.txt"
+    useImageResize: bool = False  # default: False (use image rescale - True, or skeleton rescale, considered as slightly better one - False)
     useCuda: bool = False  # default: False - it's faster for single evaluation to use CPU than GPU (moving data to GPU - CUDA costs more than evaluation benefits gained from it)
 
     # --Read input arguments and set variables--
-    useMediaPipe, useMatlabPreprocessing, useShiftedData, inputFolderPath, inputImageName, useImageResize, useCuda = getArgumentOptionsSingle(argv,
-                                                                                                                                              useMediaPipe,
-                                                                                                                                              useMatlabPreprocessing,
-                                                                                                                                              useShiftedData,
-                                                                                                                                              inputFolderPath,
-                                                                                                                                              inputImageName,
-                                                                                                                                              useImageResize,
-                                                                                                                                              useCuda)
+    useMediaPipe, useMatlabPreprocessing, useShiftedData, inputFolderPath, inputImageName, outputFileName, useImageResize, useCuda = getArgumentOptionsSingle(argv,
+                                                                                                                                                              useMediaPipe,
+                                                                                                                                                              useMatlabPreprocessing,
+                                                                                                                                                              useShiftedData,
+                                                                                                                                                              inputFolderPath,
+                                                                                                                                                              inputImageName,
+                                                                                                                                                              outputFileName,
+                                                                                                                                                              useImageResize,
+                                                                                                                                                              useCuda)
 
     # Specify "inputImageFilePath"
     if inputFolderPath != "":
@@ -105,11 +108,14 @@ def main(argv):
         # If Matlab preprocessing is disabled, but we want to shift our data, we can perform it using our Python's method
         print(f"1.6. Performing local skeleton shift ...")
         locallyShiftSkeleton(skeletonFromCopyPath, useMediaPipe)
+    else:
+        # If "useMatlabPreprocessing=False" AND "useShiftedData=False", we have to remove last row from OpenPose skeleton data
+        fileRemoveLastRowInSkeleton(skeletonFromCopyPath)
 
     # --Run "Python-eval-model" script to classify skeleton by PyTorch's model--
     print(f"1.7. Getting PyTorch classification ...")
     outputClassifyFilePath = getPyTorchClassification(skeletonFromCopyPath,
-                                                      "results.txt",
+                                                      outputFileName,
                                                       useMediaPipe,
                                                       useShiftedData,
                                                       useCuda)
@@ -123,5 +129,4 @@ def main(argv):
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-    print("-- END OF 'main.single.py' SCRIPT --")
-
+    print("-- END OF 'main-single.py' SCRIPT --")

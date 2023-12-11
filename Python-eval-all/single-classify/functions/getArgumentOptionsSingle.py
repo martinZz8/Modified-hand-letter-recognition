@@ -8,6 +8,7 @@ def getArgumentOptionsSingle(argv,
                              useShiftedData: bool,
                              inputFolderPath: str,
                              inputImageName: str,
+                             outputFileName: str,
                              useImageResize: bool,
                              useCuda: bool):
     # --Read input arguments and set variables--
@@ -18,8 +19,8 @@ def getArgumentOptionsSingle(argv,
 
     # Also note, that in second argument of "getopt.getopt()" method (short args) you should provice colon ':' after short argument, if it's with value, otherwise no.
     # Same thing goes to third argument (long args), but with equal sign '='.
-    opts, args = getopt.getopt(argv, "hmopPsSf:i:rRcC",
-                               ["help", "media-pipe", "open-pose", "preprocessing", "no-preprocessing", "shifted-data", "no-shifted-data", "input-folder-path=", "input-image=", "image-resize", "skeleton-rescale", "cuda", "cpu"])
+    opts, args = getopt.getopt(argv, "hmopPsSf:i:t:rRcC",
+                               ["help", "media-pipe", "open-pose", "preprocessing", "no-preprocessing", "shifted-data", "no-shifted-data", "input-folder-path=", "input-image=", "output-file=", "image-resize", "skeleton-rescale", "cuda", "cpu"])
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):  # help
@@ -33,10 +34,11 @@ def getArgumentOptionsSingle(argv,
                   '-S, --no-shifted-data (use non-shifted data)\n'
                   '-f, --input-folder-path (specify input folder path - default "")\n'
                   '-i, --input-image (specify input image file name - default "P2_A.bmp")\n'
+                  '-t, --output-file (specify output results file name - default "results.txt")\n'
                   '-r, --image-resize (use image resize)\n'
                   '-R, --skeleton-rescale (use skeleton rescale - default)\n'
-                  '-c, --cuda (use cuda if available - default)\n'
-                  '-C, --cpu (use cpu)\n\n'
+                  '-c, --cuda (use cuda if available)\n'
+                  '-C, --cpu (use cpu - default)\n\n'
                   'Also note, that you should use only one of the following pair values (otherwise it would be used the least provided):\n'
                   '-m, -o\n'
                   '-p, -P\n'
@@ -60,6 +62,8 @@ def getArgumentOptionsSingle(argv,
             inputFolderPath = arg
         elif opt in ("-i", "--input-image"):  # (specify input image file name - default "P2_A.bmp")
             inputImageName = arg
+        elif opt in ("-t", "--output-file"):  # (specify output results file name - default "results.txt")
+            outputFileName = arg
         elif opt in ("-r", "--image-resize"):  # (use image resize)
             useImageResize = True
         elif opt in ("-R", "--skeleton-rescale"):  # (use skeleton rescale - default)
@@ -79,7 +83,8 @@ def getArgumentOptionsSingle(argv,
           f"- useShiftedData = {useShiftedData}\n"
           f"- inputFolderPath = {inputFolderPath}\n"
           f"- inputImageName = {inputImageName}\n"
+          f"- outputFileName = {inputImageName}\n"
           f"- useImageResize = {useImageResize}\n"
           f"- useCuda = {useCuda}\n")
 
-    return useMediaPipe, useMatlabPreprocessing, useShiftedData, inputFolderPath, inputImageName, useImageResize, useCuda
+    return useMediaPipe, useMatlabPreprocessing, useShiftedData, inputFolderPath, inputImageName, outputFileName, useImageResize, useCuda

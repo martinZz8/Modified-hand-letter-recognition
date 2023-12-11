@@ -26,7 +26,7 @@ def locallyShiftSkeleton(skeletonPath: str,
 
     # If OpenPose data, perform removal of last, redundant 22nd row
     if not useMediaPipe:
-        skeleton = skeleton[0:len(skeleton)-1]
+        skeleton = skeleton[0:len(skeleton) - 1]
 
     # Count skeleton's CoG
     cx, cy = countSkeletonCoG(skeleton)
