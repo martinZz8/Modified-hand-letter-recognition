@@ -38,7 +38,7 @@ def rescaleSkeleton(inputImageFilePath: str,
                                                     0,
                                                     imageHeight,
                                                     isInt=False,
-                                                    usetwoDecimalPoints = True)
+                                                    useTwoDecimalPoints=True)
 
         # Transform 2D array of "rescaledSkeleton" into proper str and save it to file
         saveSkeletonToFile(skeletonFilePath, rescaledSkeleton)

@@ -65,7 +65,7 @@ def normalizeValuesOwnRowCol(vals,
                              x_min_sec,
                              x_max_sec,
                              isInt = True,
-                             usetwoDecimalPoints = True):
+                             useTwoDecimalPoints = True):
     """Normalizes 2D array of numerous values to specified range.
 
       Args:
@@ -104,7 +104,7 @@ def normalizeValuesOwnRowCol(vals,
                                                         x_min_to_pass,
                                                         x_max_to_pass)
 
-                if usetwoDecimalPoints:
+                if useTwoDecimalPoints:
                     new_vals[i][j] = round(new_vals[i][j], 2)
 
     return new_vals

@@ -51,6 +51,7 @@ def main(argv):
         raise Exception("Input file doesn't exist in input folder.")
 
     # -- Change input image size (perform resize) - if "useImageRescale" is True --
+    # Note!: Resized image is placed in folder "input/resized" and has suffix "_res.<ext>" (<ext> stands for extension)
     if useImageResize:
         print(f"0. Change input image size ...")
         splittedInputImageFileName = inputImageName.split(".")
@@ -69,6 +70,7 @@ def main(argv):
             inputImageFilePath = outputImageFilePath  # it's not error here, that we use "outputImageFilePath"
 
     # --Get skeleton using either MediaPipe or OpenPose (based on selected method)
+    # Note!: If image was resized before (useImageResize=True), skeleton provided in "outputTemp" folder of either OpenPose or MediaPipe libraries has "_res.txt" suffix.
     if useMediaPipe:
         print(f"1. Getting skeleton using MediaPipe ...")
         outputTxtFilePath = getMediaPipeSk(inputImageFilePath)

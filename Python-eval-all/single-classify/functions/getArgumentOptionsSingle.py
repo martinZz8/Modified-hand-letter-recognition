@@ -56,7 +56,7 @@ def getArgumentOptionsSingle(argv,
             useShiftedData = True
         elif opt in ("-S", "--no-shifted-data"):  # use non-shifted data
             useShiftedData = False
-        elif opt in ("-f", "--input-folder-path"):  # (specify input folder path - default "")
+        elif opt in ("-f", "--input-folder-path"):  # (specify input folder path - default "" stands for current working directory of "main-single.py" script)
             inputFolderPath = arg
         elif opt in ("-i", "--input-image"):  # (specify input image file name - default "P2_A.bmp")
             inputImageName = arg
@@ -69,7 +69,7 @@ def getArgumentOptionsSingle(argv,
         elif opt in ("-C", "--cpu"):  # use cpu
             useCuda = False
 
-    # *Swap "useShiftedData" to False, when "useMatlabPreprocessing" is False - shifting cannot be performed when preprocessing isn't performed
+    # NOT USED: *Swap "useShiftedData" to False, when "useMatlabPreprocessing" is False - shifting cannot be performed when preprocessing isn't performed
     # if not useMatlabPreprocessing:
     #     useShiftedData = False
 
