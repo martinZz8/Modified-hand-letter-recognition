@@ -1,6 +1,7 @@
 # Standard imports
 import sys
-from os.path import isfile, dirname, join
+from os.path import isfile, dirname, join, exists
+from os import mkdir
 
 # Custom functions imports
 sys.path.append(join(dirname(__file__), "functions"))  # important - if not used, "rescaleSkeleton" module is not found
@@ -63,7 +64,12 @@ def main(argv):
         newInputImageName = splittedInputImageFileName[0] + "_res" + "." + splittedInputImageFileName[1]
 
         if inputFolderPath != "":
-            outputImageFilePath = join(inputFolderPath, newInputImageName)
+            resizedFolderPath = join(inputFolderPath, "resized")
+
+            if not exists(resizedFolderPath):
+                mkdir(resizedFolderPath)
+
+            outputImageFilePath = join(resizedFolderPath, newInputImageName)
         else:
             outputImageFilePath = join(dirname(__file__), "input", "resized", newInputImageName)
 

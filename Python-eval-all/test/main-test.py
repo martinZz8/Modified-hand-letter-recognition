@@ -2,6 +2,7 @@
 import sys
 from tqdm.auto import tqdm
 from os.path import dirname, join
+from math import floor
 
 # Custom functions imports
 from functions.getArgumentOptionsTest import getArgumentOptionsTest
@@ -36,11 +37,11 @@ def main(argv):
     # --Performing recognitions--
     print(f"2. Performing recognitions ...")
 
-    recognitions = []
+    recognitionResults = []
     for idx, imagePath in enumerate(tqdm(loadedImagePaths)):
         resultOfTest = performTest(selectedOptionIdx, imagePath)
 
-        recognitions.append({
+        recognitionResults.append({
             'imageFileName': imagePath['imageFileName'],
             'errorTermination': resultOfTest['errorTermination'],
             'realLetter': resultOfTest['realLetter'],
@@ -50,14 +51,14 @@ def main(argv):
 
     # --Calc accuracy and other params of results--
     print(f"3. Calculating accuracy and other params ...")
-    numOfErrorTerminations = len(list(filter(lambda x: x['errorTermination'], recognitions)))
-    numOfProperRecognitions = len(list(filter(lambda x: x['properClassify'], recognitions)))
-    calcAcc = (numOfProperRecognitions / len(loadedImagePaths))
+    numOfErrorTerminations = len(list(filter(lambda x: x['errorTermination'], recognitionResults)))
+    numOfProperRecognitions = len(list(filter(lambda x: x['properClassify'], recognitionResults)))
+    calcAcc = floor((numOfProperRecognitions / len(loadedImagePaths)) * 1000) / 1000
 
     print(f"numOfErrorTerminations: {numOfErrorTerminations}\nnumOfProperRecognitions: {numOfProperRecognitions}\ncalcAcc: {calcAcc}")
 
     # --Save results to files--
-    # TODO - e.g. confusion matrix (for each letter - row real, col predict), save accuracy to file
+    # TODO - e.g. confusion matrix (for each letter - row predict, col real), save accuracy to file
 
 
 if __name__ == "__main__":

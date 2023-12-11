@@ -27,13 +27,12 @@ def performTest(selectedOptionIdx, imagePath, resultFileName="results.txt"):
         resultFileName
     ]
     cwd = join(dirname(dirname(dirname(__file__))), "single-classify")
-    # print(f"cwd: {cwd}")
 
     # -- Run "main-single.py" script --
     ls_output = subprocess.Popen([pathToExec, scriptPythonVersion, scriptName] + scriptAddParameters, cwd=cwd)
     ls_output.communicate()  # Will block for 30 seconds
     rc = ls_output.returncode
-    print(f"rc: {rc}")
+    # print(f"rc: {rc}")
 
     # Check whether script terminated successfully (without error) and check for result
     if rc == 0:
@@ -47,7 +46,7 @@ def performTest(selectedOptionIdx, imagePath, resultFileName="results.txt"):
 
             if len(resultFileContentLines) > 0:
                 predictedLetter = resultFileContentLines[0].split(": ")[1]
-                print(f"Recognized letter: {predictedLetter}")
+                # print(f"Predicted letter: {predictedLetter}")
 
                 if predictedLetter == imagePath['letter']:
                     properClassify = True
