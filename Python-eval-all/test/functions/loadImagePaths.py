@@ -10,7 +10,7 @@ from consts.consts import availableLetters
 def loadImagePaths(inputSingleFolderPath: str):
     loadedImageDicts = []  # list of dictionaries with params "letter" and "path"
 
-    for letter in tqdm(availableLetters[:1]):
+    for letter in tqdm(availableLetters):
         imagesLetterPath = join(inputSingleFolderPath, letter)
         onlyFileNames = [f for f in listdir(imagesLetterPath) if isfile(join(imagesLetterPath, f))]
 
