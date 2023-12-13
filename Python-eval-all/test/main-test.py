@@ -83,6 +83,7 @@ def main(argv):
         if optionIdx != (len(combinedOptions) - 1):
             print("\n\n")
 
+
 if __name__ == "__main__":
     main(sys.argv[1:])
     print("-- END OF 'main-test.py' SCRIPT --")
