@@ -17,6 +17,10 @@ from functions.saveResultsToFile import saveResultsToFile
 # Custom consts imports
 from consts.consts import combinedOptions
 
+# Cusotm exceptions imports
+from exceptions.ErrorMismatchResultLen import ErrorMismatchResultLen
+from exceptions.ErrorBlankTensor import ErrorBlankTensor
+
 
 def main(argv):
     # -- Consts (for eval model function) --
@@ -64,23 +68,29 @@ def main(argv):
         elapsedTime = evalTimeStop - evalTimeStart
 
         # --Calc accuracy and other params of results--
-        print(f"3. Calculating accuracy and other params ...")
-        calcedAcc, numOfErrorTerminations, numOfProperRecognitions = calcAccuracy(recognitionResults)
-        calcedPrecision = calcPrecision(recognitionResults)
-        calcedRecall = calcRecall(recognitionResults)
-        calcedF1Score = calcF1Score(recognitionResults)
+        if len(recognitionResults) > 0:
+            print(f"3. Calculating accuracy and other params ...")
+            calcedAcc, numOfErrorTerminations, numOfProperRecognitions = calcAccuracy(recognitionResults)
 
-        # --Save results to file--
-        print(f"4. Saving results to output file ...")
-        saveResultsToFile(recognitionResults,
-                          calcedAcc,
-                          calcedPrecision,
-                          calcedRecall,
-                          calcedF1Score,
-                          elapsedTime,
-                          numOfErrorTerminations,
-                          numOfProperRecognitions,
-                          combinedOptions[optionIdx])
+            try:
+                calcedPrecision = calcPrecision(recognitionResults)
+                calcedRecall = calcRecall(recognitionResults)
+                calcedF1Score = calcF1Score(recognitionResults)
+            except (ErrorMismatchResultLen, ErrorBlankTensor) as e:
+                print(f"{e} Terminated script.")
+                sys.exit(1)
+
+            # --Save results to file--
+            print(f"4. Saving results to output file ...")
+            saveResultsToFile(recognitionResults,
+                              calcedAcc,
+                              calcedPrecision,
+                              calcedRecall,
+                              calcedF1Score,
+                              elapsedTime,
+                              numOfErrorTerminations,
+                              numOfProperRecognitions,
+                              combinedOptions[optionIdx])
 
         if optionIdx != (len(combinedOptions) - 1):
             print("\n\n")
