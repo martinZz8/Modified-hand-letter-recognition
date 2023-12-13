@@ -10,7 +10,7 @@ from consts.consts import combinedOptions
 def performTest(selectedOptionIdx, imagePath, resultFileName="results.txt"):
     # Specify output params
     errorTermination = True
-    predictedLetter = ""
+    predictedLetter = "-"
     properClassify = False
     resultFilePath = ""
 

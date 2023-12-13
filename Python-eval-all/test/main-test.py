@@ -2,17 +2,21 @@
 import sys
 from tqdm.auto import tqdm
 from os.path import dirname, join
-from math import floor
 
 # Custom functions imports
 from functions.getArgumentOptionsTest import getArgumentOptionsTest
 from functions.loadImagePaths import loadImagePaths
 from functions.performTest import performTest
+from functions.calcAccuracy import calcAccuracy
+from functions.saveResultsToFile import saveResultsToFile
+
+# Custom consts imports
+# sys.path.append(dirname(__file__))
+from consts.consts import combinedOptions
 
 
 def main(argv):
     # -- Consts (for eval model function) --
-
 
     # --Option variables--
     selectedOptionIdx = 0  # default: 0
@@ -51,13 +55,15 @@ def main(argv):
 
     # --Calc accuracy and other params of results--
     print(f"3. Calculating accuracy and other params ...")
-    numOfErrorTerminations = len(list(filter(lambda x: x['errorTermination'], recognitionResults)))
-    numOfProperRecognitions = len(list(filter(lambda x: x['properClassify'], recognitionResults)))
-    calcAcc = floor((numOfProperRecognitions / len(loadedImagePaths)) * 1000) / 1000
-
-    print(f"numOfErrorTerminations: {numOfErrorTerminations}\nnumOfProperRecognitions: {numOfProperRecognitions}\ncalcAcc: {calcAcc}")
+    calcedAcc, numOfErrorTerminations, numOfProperRecognitions = calcAccuracy(recognitionResults)
 
     # --Save results to files--
+    print(f"4. Saving results to output file ...")
+    saveResultsToFile(recognitionResults,
+                      calcedAcc,
+                      numOfErrorTerminations,
+                      numOfProperRecognitions,
+                      combinedOptions[selectedOptionIdx])
     # TODO - e.g. confusion matrix (for each letter - row predict, col real), save accuracy to file
 
 
