@@ -88,7 +88,7 @@ def main(argv):
             outputTxtFilePath = getMediaPipeSk(inputImageFilePath)
         except (ErrorInputFileExtension, ErrorLandmarkDetection) as e:
             print("Error during determining MediaPipe's skeleton. Terminating program abnormally.")
-            sys.exit(-1)
+            sys.exit(1)  # Note! return codes can only have natural values (with zero included, which indicates proper execution of script - other ones are errors)
     else:
         print(f"1. Getting skeleton using OpenPose ...")  # old: inputImageName
         outputTxtFilePath = getOpenPoseSk(inputImageFilePath)  # old: inputImageName

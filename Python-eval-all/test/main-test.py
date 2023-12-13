@@ -32,7 +32,7 @@ def main(argv):
     # Terminate script, when "selectedOptionIdx" is out of range <0,11>
     if (selectedOptionIdx < 0) or (selectedOptionIdx > 11):
         print("Error during passing 'selectedOptionIdx' argument, it has to be in range of <0,11>")
-        sys.exit(-1)
+        sys.exit(1)
 
     # --Load image paths (list of dictionaries)--
     print(f"1. Getting images paths ...")

@@ -1,0 +1,2 @@
+class ErrorInputFileLetter(Exception):
+    pass
