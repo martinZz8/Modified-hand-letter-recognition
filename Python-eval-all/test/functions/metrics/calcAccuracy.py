@@ -4,6 +4,7 @@ from math import floor
 def calcAccuracy(recognitionResults, isPrint=True):
     numOfErrorTerminations = len(list(filter(lambda x: x['errorTermination'], recognitionResults)))
     numOfProperRecognitions = len(list(filter(lambda x: x['properClassify'], recognitionResults)))
+    
     if len(recognitionResults) != numOfErrorTerminations:
         calcAcc = (floor((numOfProperRecognitions / (len(recognitionResults) - numOfErrorTerminations)) * 100) / 100) * 100 # in percetange value
     else:
