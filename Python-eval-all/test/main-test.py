@@ -22,69 +22,66 @@ def main(argv):
     # -- Consts (for eval model function) --
 
     # --Option variables--
-    selectedOptionIdx = 0  # default: 0
     inputImagesFolderPath: str = join(dirname(__file__), "input", "images")  # default: "<curr_workdir_path>/input/images"
     useCuda: bool = False  # default: False
 
     # --Read input arguments and set variables--
-    selectedOptionIdx, inputImagesFolderPath, useCuda = getArgumentOptionsTest(argv,
-                                                                               selectedOptionIdx,
-                                                                               inputImagesFolderPath,
-                                                                               useCuda)
-
-    # Terminate script, when "selectedOptionIdx" is out of range <0,11>
-    if (selectedOptionIdx < 0) or (selectedOptionIdx > (len(combinedOptions)-1)):
-        print("Error during passing 'selectedOptionIdx' argument, it has to be in range of <0,11>")
-        sys.exit(1)
-
+    inputImagesFolderPath, useCuda = getArgumentOptionsTest(argv,
+                                                            inputImagesFolderPath,
+                                                            useCuda)
     # --Load image paths (list of dictionaries)--
     print(f"1. Getting images paths ...")
     loadedImagePaths = loadImagePaths(inputImagesFolderPath)
 
-    # --Performing recognitions--
-    print(f"2. Performing recognitions ...")
+    # --Performing recognitions (for each option)--
+    print(f"2. Performing recognitions (for each element in combinedOptions)...")
 
-    # Start the timer
-    evalTimeStart = timer()
+    for optionIdx in range(len(combinedOptions)):
+        print(f"**Current option idx: {optionIdx} of {len(combinedOptions)-1}**")
 
-    # Perform recognitions
-    recognitionResults = []
-    for idx, imagePath in enumerate(tqdm(loadedImagePaths)):
-        resultOfTest = performTest(selectedOptionIdx, imagePath)
+        # Start the timer
+        evalTimeStart = timer()
 
-        recognitionResults.append({
-            'imageFileName': imagePath['imageFileName'],
-            'errorTermination': resultOfTest['errorTermination'],
-            'realLetter': resultOfTest['realLetter'],
-            'predictedLetter': resultOfTest['predictedLetter'],
-            'properClassify': resultOfTest['properClassify']
-        })
+        # Perform recognitions
+        recognitionResults = []
+        for idx, imagePath in enumerate(tqdm(loadedImagePaths)):
+            resultOfTest = performTest(optionIdx, imagePath)
 
-    # Stop the timer
-    evalTimeStop = timer()
+            recognitionResults.append({
+                'imageFileName': imagePath['imageFileName'],
+                'errorTermination': resultOfTest['errorTermination'],
+                'realLetter': resultOfTest['realLetter'],
+                'predictedLetter': resultOfTest['predictedLetter'],
+                'properClassify': resultOfTest['properClassify']
+            })
 
-    # Count elapsed time
-    elapsedTime = evalTimeStop - evalTimeStart
+        # Stop the timer
+        evalTimeStop = timer()
 
-    # --Calc accuracy and other params of results--
-    print(f"3. Calculating accuracy and other params ...")
-    calcedAcc, numOfErrorTerminations, numOfProperRecognitions = calcAccuracy(recognitionResults)
-    calcedPrecision = calcPrecision(recognitionResults)
-    calcedRecall = calcRecall(recognitionResults)
-    calcedF1Score = calcF1Score(recognitionResults)
+        # Count elapsed time
+        elapsedTime = evalTimeStop - evalTimeStart
 
-    # --Save results to file--
-    print(f"4. Saving results to output file ...")
-    saveResultsToFile(recognitionResults,
-                      calcedAcc,
-                      calcedPrecision,
-                      calcedRecall,
-                      calcedF1Score,
-                      elapsedTime,
-                      numOfErrorTerminations,
-                      numOfProperRecognitions,
-                      combinedOptions[selectedOptionIdx])
+        # --Calc accuracy and other params of results--
+        print(f"3. Calculating accuracy and other params ...")
+        calcedAcc, numOfErrorTerminations, numOfProperRecognitions = calcAccuracy(recognitionResults)
+        calcedPrecision = calcPrecision(recognitionResults)
+        calcedRecall = calcRecall(recognitionResults)
+        calcedF1Score = calcF1Score(recognitionResults)
 
+        # --Save results to file--
+        print(f"4. Saving results to output file ...")
+        saveResultsToFile(recognitionResults,
+                          calcedAcc,
+                          calcedPrecision,
+                          calcedRecall,
+                          calcedF1Score,
+                          elapsedTime,
+                          numOfErrorTerminations,
+                          numOfProperRecognitions,
+                          combinedOptions[optionIdx])
+
+        if optionIdx != (len(combinedOptions) - 1):
+            print("\n\n")
 
 if __name__ == "__main__":
     main(sys.argv[1:])
