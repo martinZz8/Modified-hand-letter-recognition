@@ -31,10 +31,10 @@ def saveResultsToFile(recognitionResults: list,
                 f"predictedResults: {convertListToStr(predictedResults)}\n" \
                 f"realResults: {convertListToStr(realResults)}\n" \
                 f"accuracy: {accuracy}%\n" \
-                f"precision: {precision}%\n" \
-                f"recall: {recall}%\n" \
-                f"f1Score: {f1Score}%\n" \
-                f"elapsedTime(sec): {elapsedTime:.3f}%\n" \
+                f"precision: {precision}\n" \
+                f"recall: {recall}\n" \
+                f"f1Score: {f1Score}\n" \
+                f"elapsedTime(sec): {elapsedTime:.3f}\n" \
                 f"numOfErrorTerminations: {numOfErrorTerminations}\n" \
                 f"numOfProperRecognitions: {numOfProperRecognitions}\n" \
                 f"numOfImproperRecognitions: {len(predictedResults) - numOfErrorTerminations - numOfProperRecognitions}\n" \

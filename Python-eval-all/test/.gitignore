@@ -2,6 +2,7 @@ input
 output
 functions/__pycache__
 functions/metrics/__pycache__
+functions/exceptions/__pycache__
 consts/__pycache__
 batch-scripts/__pycache__
 batch-scripts/functions/__pycache__

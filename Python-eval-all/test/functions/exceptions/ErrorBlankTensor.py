@@ -1,0 +1,2 @@
+class ErrorBlankTensor(Exception):
+    pass
