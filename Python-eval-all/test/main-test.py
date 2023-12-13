@@ -2,16 +2,19 @@
 import sys
 from tqdm.auto import tqdm
 from os.path import dirname, join
+from timeit import default_timer as timer
 
 # Custom functions imports
 from functions.getArgumentOptionsTest import getArgumentOptionsTest
 from functions.loadImagePaths import loadImagePaths
 from functions.performTest import performTest
-from functions.calcAccuracy import calcAccuracy
+from functions.metrics.calcAccuracy import calcAccuracy
+from functions.metrics.calcPrecision import calcPrecision
+from functions.metrics.calcRecall import calcRecall
+from functions.metrics.calcF1Score import calcF1Score
 from functions.saveResultsToFile import saveResultsToFile
 
 # Custom consts imports
-# sys.path.append(dirname(__file__))
 from consts.consts import combinedOptions
 
 
@@ -30,7 +33,7 @@ def main(argv):
                                                                                useCuda)
 
     # Terminate script, when "selectedOptionIdx" is out of range <0,11>
-    if (selectedOptionIdx < 0) or (selectedOptionIdx > 11):
+    if (selectedOptionIdx < 0) or (selectedOptionIdx > (len(combinedOptions)-1)):
         print("Error during passing 'selectedOptionIdx' argument, it has to be in range of <0,11>")
         sys.exit(1)
 
@@ -41,6 +44,10 @@ def main(argv):
     # --Performing recognitions--
     print(f"2. Performing recognitions ...")
 
+    # Start the timer
+    evalTimeStart = timer()
+
+    # Perform recognitions
     recognitionResults = []
     for idx, imagePath in enumerate(tqdm(loadedImagePaths)):
         resultOfTest = performTest(selectedOptionIdx, imagePath)
@@ -53,18 +60,30 @@ def main(argv):
             'properClassify': resultOfTest['properClassify']
         })
 
+    # Stop the timer
+    evalTimeStop = timer()
+
+    # Count elapsed time
+    elapsedTime = evalTimeStop - evalTimeStart
+
     # --Calc accuracy and other params of results--
     print(f"3. Calculating accuracy and other params ...")
     calcedAcc, numOfErrorTerminations, numOfProperRecognitions = calcAccuracy(recognitionResults)
+    calcedPrecision = calcPrecision(recognitionResults)
+    calcedRecall = calcRecall(recognitionResults)
+    calcedF1Score = calcF1Score(recognitionResults)
 
-    # --Save results to files--
+    # --Save results to file--
     print(f"4. Saving results to output file ...")
     saveResultsToFile(recognitionResults,
                       calcedAcc,
+                      calcedPrecision,
+                      calcedRecall,
+                      calcedF1Score,
+                      elapsedTime,
                       numOfErrorTerminations,
                       numOfProperRecognitions,
                       combinedOptions[selectedOptionIdx])
-    # TODO - e.g. confusion matrix (for each letter - row predict, col real), save accuracy to file
 
 
 if __name__ == "__main__":
