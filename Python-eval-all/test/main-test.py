@@ -36,6 +36,8 @@ def main(argv):
     # --Performing recognitions (for each option)--
     print(f"2. Performing recognitions (for each element in combinedOptions)...")
 
+    # Note!: Change range of for loop when you want to omit some options.
+    # E.g.: for optionIdx in range(1, len(combinedOptions)) - if we want to omit first option
     for optionIdx in range(len(combinedOptions)):
         print(f"**Current option idx: {optionIdx} of {len(combinedOptions)-1}**")
 
