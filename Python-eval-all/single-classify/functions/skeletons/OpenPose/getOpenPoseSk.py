@@ -58,6 +58,7 @@ def getOpenPoseSk(inputImageFilePath: str):
 
     # Check if output file has proper number of rows
     resBool, numOfLandmarks = checkIfOutputIsProper(pathToOutputFile)
+
     if not resBool:
         if numOfLandmarks < 21:
             raise ErrorLandmarkDetection("Error: Couldn't recognize hand landmarks - num of rows below 21")

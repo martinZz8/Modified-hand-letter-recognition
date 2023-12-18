@@ -2,6 +2,8 @@ from os.path import dirname, join
 import shutil
 import subprocess
 
+from exceptions.ErrorPyTorchClassify import ErrorPyTorchClassify
+
 
 def getPyTorchClassification(inputSkeletonPath: str,
                              outputFileName: str,
@@ -44,6 +46,10 @@ def getPyTorchClassification(inputSkeletonPath: str,
     # Also note, how to throw stdout from subprocess away: https://stackoverflow.com/questions/7082623/suppress-output-from-subprocess-popen
     ls_output = subprocess.Popen([scriptProgramName, scriptPythonVersion, scriptName] + scriptAddParameters, cwd=classifySkeletonCwd)
     ls_output.communicate()  # Will block for 30 seconds
+    rc = ls_output.returncode
+
+    if rc != 0:
+        raise ErrorPyTorchClassify("PyTorch classifier runs with error")
 
     # Specify output classify file path
     outputClassifyFilePath = join(classifySkeletonCwd, "output", outputFileName)

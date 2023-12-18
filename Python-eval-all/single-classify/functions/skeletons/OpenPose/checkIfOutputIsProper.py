@@ -4,7 +4,7 @@ def checkIfOutputIsProper(pathToOutputFile: str):
         splittedFileContent = fileContent.split("\n")
 
         lenOfSplittedFileContent = len(splittedFileContent)
-        if lenOfSplittedFileContent != 22:
+        if lenOfSplittedFileContent != 21:
             return False, lenOfSplittedFileContent
 
         return True, lenOfSplittedFileContent
