@@ -13,11 +13,11 @@ from functions.resizeImage import resizeImage
 from functions.rescaleSkeleton import rescaleSkeleton
 from functions.preprocessing.getMatlabPreprocessedSkeleton import getMatlabPreprocessedSkeleton
 from functions.preprocessing.locallyShiftSkeleton import locallyShiftSkeleton
-from functions.preprocessing.fileRemoveLastRowInSkeleton import fileRemoveLastRowInSkeleton
+from functions.preprocessing.fileRemoveRowsInSkeleton import fileRemoveRowsInSkeleton
 from functions.classify.getPyTorchClassification import getPyTorchClassification
 from functions.classify.copyAndGetResultsOfClassify import copyAndGetResultsOfClassify
-from functions.skeletons.MediaPipe.exceptions.ErrorInputFileExtension import ErrorInputFileExtension
-from functions.skeletons.MediaPipe.exceptions.ErrorLandmarkDetection import ErrorLandmarkDetection
+from functions.skeletons.exceptions.ErrorInputFileExtension import ErrorInputFileExtension
+from functions.skeletons.exceptions.ErrorLandmarkDetection import ErrorLandmarkDetection
 
 
 def main(argv):
@@ -82,16 +82,16 @@ def main(argv):
 
     # --Get skeleton using either MediaPipe or OpenPose (based on selected method)
     # Note!: If image was resized before (useImageResize=True), skeleton provided in "outputTemp" folder of either OpenPose or MediaPipe libraries has "_res.txt" suffix.
-    if useMediaPipe:
-        print(f"1. Getting skeleton using MediaPipe ...")
-        try:
+    try:
+        if useMediaPipe:
+            print(f"1. Getting skeleton using MediaPipe ...")
             outputTxtFilePath = getMediaPipeSk(inputImageFilePath)
-        except (ErrorInputFileExtension, ErrorLandmarkDetection) as e:
-            print("Error during determining MediaPipe's skeleton. Terminating program abnormally.")
-            sys.exit(1)  # Note! return codes can only have natural values (with zero included, which indicates proper execution of script - other ones are errors)
-    else:
-        print(f"1. Getting skeleton using OpenPose ...")  # old: inputImageName
-        outputTxtFilePath = getOpenPoseSk(inputImageFilePath)  # old: inputImageName
+        else:
+            print(f"1. Getting skeleton using OpenPose ...")  # old: inputImageName
+            outputTxtFilePath = getOpenPoseSk(inputImageFilePath)  # old: inputImageName
+    except (ErrorInputFileExtension, ErrorLandmarkDetection) as e:
+        print(f"Error during determining {'MediaPipe' if useMediaPipe else 'OpenPose'}'s skeleton. Terminating program abnormally.")
+        sys.exit(1)  # Note! return codes can only have natural values (with zero included, which indicates proper execution of script - other ones are errors)
 
     print(f"outputTxtFilePath: {outputTxtFilePath}")
 
@@ -114,9 +114,9 @@ def main(argv):
         # If Matlab preprocessing is disabled, but we want to shift our data, we can perform it using our Python's method
         print(f"1.6. Performing local skeleton shift ...")
         locallyShiftSkeleton(skeletonFromCopyPath, useMediaPipe)
-    else:
+    elif not useMediaPipe:
         # If "useMatlabPreprocessing=False" AND "useShiftedData=False", we have to remove last row from OpenPose skeleton data
-        fileRemoveLastRowInSkeleton(skeletonFromCopyPath)
+        fileRemoveRowsInSkeleton(skeletonFromCopyPath, True)
 
     # --Run "Python-eval-model" script to classify skeleton by PyTorch's model--
     print(f"1.7. Getting PyTorch classification ...")

@@ -73,9 +73,8 @@ def main(argv):
     # --Calc accuracy and other params of results--
     print(f"3. Calculating accuracy and other params ...")
     if len(recognitionResults) > 0:
-        calcedAcc, numOfErrorTerminations, numOfProperRecognitions = calcAccuracy(recognitionResults)
-
         try:
+            calcedAcc, numOfErrorTerminations, numOfProperRecognitions = calcAccuracy(recognitionResults)
             calcedPrecision = calcPrecision(recognitionResults)
             calcedRecall = calcRecall(recognitionResults)
             calcedF1Score = calcF1Score(recognitionResults)
