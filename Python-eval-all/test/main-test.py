@@ -17,7 +17,7 @@ from functions.saveResultsToFile import saveResultsToFile
 # Custom consts imports
 from consts.consts import combinedOptions
 
-# Cusotm exceptions imports
+# Custom exceptions imports
 from exceptions.ErrorMismatchResultLen import ErrorMismatchResultLen
 from exceptions.ErrorBlankTensor import ErrorBlankTensor
 
@@ -70,9 +70,8 @@ def main(argv):
         # --Calc accuracy and other params of results--
         if len(recognitionResults) > 0:
             print(f"3. Calculating accuracy and other params ...")
-            calcedAcc, numOfErrorTerminations, numOfProperRecognitions = calcAccuracy(recognitionResults)
-
             try:
+                calcedAcc, numOfErrorTerminations, numOfProperRecognitions = calcAccuracy(recognitionResults)
                 calcedPrecision = calcPrecision(recognitionResults)
                 calcedRecall = calcRecall(recognitionResults)
                 calcedF1Score = calcF1Score(recognitionResults)

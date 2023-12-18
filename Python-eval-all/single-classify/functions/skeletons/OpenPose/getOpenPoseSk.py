@@ -6,7 +6,9 @@ import subprocess
 sys.path.append(dirname(__file__))
 sys.path.append(dirname(dirname(__file__)))
 from replaceCharactersInFile import replaceCharactersInFile
-
+from checkIfOutputIsProper import checkIfOutputIsProper
+from exceptions.ErrorInputFileExtension import ErrorInputFileExtension
+from exceptions.ErrorLandmarkDetection import ErrorLandmarkDetection
 
 def hasFileNameProperExtension(inputFileName: str,
                                properFileExtensions: list[str]):
@@ -27,8 +29,7 @@ def getOpenPoseSk(inputImageFilePath: str):
     can_continue = hasFileNameProperExtension(inputFileName, [".png", ".jpg", ".jpeg", ".bmp"])
 
     if not can_continue:
-        raise Exception(
-            "Input file doesn't have proper extension. Supported extensions: ['.png', '.jpg', '.jpeg', '.bmp']")
+        raise ErrorInputFileExtension("Input file doesn't have proper extension. Supported extensions: ['.png', '.jpg', '.jpeg', '.bmp']")
 
     # -- Constants definitions --
     openPoseExecName = "GetOpenPoseSkeleton.exe"
@@ -54,6 +55,14 @@ def getOpenPoseSk(inputImageFilePath: str):
     # Since "GetOpenPoseSkeleton.exe" file uses "\t" as delimiter
     pathToOutputFile = join(dirname(__file__), "outputTemp", fileNameWoExt + ".txt")
     replaceCharactersInFile(pathToOutputFile, "\t", " ", True)
+
+    # Check if output file has proper number of rows
+    resBool, numOfLandmarks = checkIfOutputIsProper(pathToOutputFile)
+    if not resBool:
+        if numOfLandmarks < 21:
+            raise ErrorLandmarkDetection("Error: Couldn't recognize hand landmarks - num of rows below 21")
+        else:
+            print(f"Warning: Couldn't recognize proper amount of hand landmarks. Recognized {numOfLandmarks}")
 
     print("End of 'getOpenPoseSk.py' function")
 
