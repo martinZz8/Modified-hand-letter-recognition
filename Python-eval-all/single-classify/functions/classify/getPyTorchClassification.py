@@ -1,7 +1,9 @@
+import sys
 from os.path import dirname, join
 import shutil
 import subprocess
 
+sys.path.append(dirname(__file__))
 from exceptions.ErrorPyTorchClassify import ErrorPyTorchClassify
 
 
