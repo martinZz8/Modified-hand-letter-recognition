@@ -51,6 +51,20 @@ else
     disp("Using passed 'useShiftedOut': " + useShiftedOut);
 end
 
+% Specifying "deleteLastRow" value
+% Note! Change 'deleteLastRow' setting to 'true' or 'false'. It determines determines if last row skeleton will be shifted or not (but always will be transformed using counted parameters from evolutional algorithm)
+defaultDeleteLastRow = false;
+if ~exist('deleteLastRow','var')
+    deleteLastRow = defaultDeleteLastRow;
+    disp("Setting default 'deleteLastRow' to: " + deleteLastRow);
+else
+    % Convert string to boolean
+    if ~islogical(deleteLastRow)
+        deleteLastRow = str2num(deleteLastRow);
+    end
+    disp("Using passed 'deleteLastRow': " + deleteLastRow);
+end
+
 % Output skeleton file name
 outputSkeletonFileName = "TransformedSkeleton.txt";
 
@@ -128,7 +142,7 @@ maxIterations = 20;
 annealingFcn = "annealingfast";
 temperatureFcn = "temperatureboltz";
 initTemp = 50;
-fitnessFunc = @(X, uc, tc) fitnessFun2(X, uc, tc, ~useMediaPipe); % Set last parameter to true, when is used OpenPose data
+fitnessFunc = @(X, uc, tc) fitnessFun2(X, uc, tc, deleteLastRow);
 
 % for MediaPipe data
 if useMediaPipe == true
@@ -137,7 +151,7 @@ if useMediaPipe == true
     annealingFcn = "annealingboltz";
     temperatureFcn = "temperatureboltz";
     initTemp = 150;
-    fitnessFunc = @(X, uc, tc) fitnessFun2(X, uc, tc, ~useMediaPipe); % Set last parameter to true, when is used OpenPose data
+    fitnessFunc = @(X, uc, tc) fitnessFun2(X, uc, tc, deleteLastRow);
 end
 
 %% START OF EVOLUTIONAL SCRIPT
@@ -176,8 +190,8 @@ if ~useShiftedOut
     transformedCloudToSave = fitnessFunBase(Xmin, inputCloud, true).Location(:, 1:2);
 end
 
-% Remove last row when using OpenPose data
-if useMediaPipe == false
+% Remove last row when "deleteLastRow"=true
+if deleteLastRow
     newLength = length(transformedCloudToSave) - 1;
     transformedCloudToSave = transformedCloudToSave(1:newLength, 1:2);
 end
