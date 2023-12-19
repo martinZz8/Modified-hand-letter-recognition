@@ -58,12 +58,13 @@ def getOpenPoseSk(inputImageFilePath: str):
 
     # Check if output file has proper number of rows
     resBool, numOfLandmarks = checkIfOutputIsProper(pathToOutputFile)
+    # print(f"resBool: {resBool}, numOfLandmarks: {numOfLandmarks}")
 
     if not resBool:
-        if numOfLandmarks < 21:
-            raise ErrorLandmarkDetection("Error: Couldn't recognize hand landmarks - num of rows below 21")
+        if numOfLandmarks < 22:
+            raise ErrorLandmarkDetection(f"Error: Couldn't recognize hand landmarks - num of rows are {numOfLandmarks}, it's below required 22 (below OpenPose's native number of points recognition)")
         else:
-            print(f"Warning: Couldn't recognize proper amount of hand landmarks. Recognized {numOfLandmarks}")
+            print(f"Warning: Couldn't recognize proper amount of hand landmarks. Recognized {numOfLandmarks}. Extra points will be truncated.")
 
     print("End of 'getOpenPoseSk.py' function")
 
