@@ -13,11 +13,12 @@ from functions.resizeImage import resizeImage
 from functions.rescaleSkeleton import rescaleSkeleton
 from functions.preprocessing.getMatlabPreprocessedSkeleton import getMatlabPreprocessedSkeleton
 from functions.preprocessing.locallyShiftSkeleton import locallyShiftSkeleton
-from functions.preprocessing.fileRemoveLastRowInSkeleton import fileRemoveRowsInSkeleton
+from functions.preprocessing.fileRemoveRowsInSkeleton import fileRemoveRowsInSkeleton
 from functions.classify.getPyTorchClassification import getPyTorchClassification
 from functions.classify.copyAndGetResultsOfClassify import copyAndGetResultsOfClassify
 from functions.skeletons.exceptions.ErrorInputFileExtension import ErrorInputFileExtension
 from functions.skeletons.exceptions.ErrorLandmarkDetection import ErrorLandmarkDetection
+from functions.classify.exceptions.ErrorPyTorchClassify import ErrorPyTorchClassify
 
 
 def main(argv):
@@ -113,18 +114,22 @@ def main(argv):
     elif useShiftedData:
         # If Matlab preprocessing is disabled, but we want to shift our data, we can perform it using our Python's method
         print(f"1.6. Performing local skeleton shift ...")
-        locallyShiftSkeleton(skeletonFromCopyPath, useMediaPipe)
+        locallyShiftSkeleton(skeletonFromCopyPath, useMediaPipe, True)
     elif not useMediaPipe:
         # If "useMatlabPreprocessing=False" AND "useShiftedData=False", we have to remove last row from OpenPose skeleton data
         fileRemoveRowsInSkeleton(skeletonFromCopyPath, True)
 
     # --Run "Python-eval-model" script to classify skeleton by PyTorch's model--
     print(f"1.7. Getting PyTorch classification ...")
-    outputClassifyFilePath = getPyTorchClassification(skeletonFromCopyPath,
-                                                      outputFileName,
-                                                      useMediaPipe,
-                                                      useShiftedData,
-                                                      useCuda)
+    try:
+        outputClassifyFilePath = getPyTorchClassification(skeletonFromCopyPath,
+                                                          outputFileName,
+                                                          useMediaPipe,
+                                                          useShiftedData,
+                                                          useCuda)
+    except ErrorPyTorchClassify as e:
+        print(f"Error during PyTorch classification. Terminating program abnormally.")
+        sys.exit(1) # Note! return codes can only have natural values (with zero included, which indicates proper execution of script - other ones are errors)
 
     # -- Read results of classification by "Python-eval-model" script
     print(f"1.8. Copying results of classification and printing them out ...")

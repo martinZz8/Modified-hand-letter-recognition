@@ -1,0 +1,2 @@
+class ErrorPyTorchClassify(Exception):
+    pass

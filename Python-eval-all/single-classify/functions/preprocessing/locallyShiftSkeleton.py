@@ -20,13 +20,17 @@ def countSkeletonCoG(skeleton: list):
 
 
 def locallyShiftSkeleton(skeletonPath: str,
-                         useMediaPipe: bool):
+                         useMediaPipe: bool,
+                         removeAllRowsToProperSize: bool = False):
     # Read skeleton from file
     skeleton = readSkeletonFromFile.readSkeletonFromFile(skeletonPath)
 
     # If OpenPose data, perform removal of last, redundant 22nd row
     if not useMediaPipe:
-        skeleton = skeleton[0:len(skeleton) - 1]
+        if not removeAllRowsToProperSize:
+            skeleton = skeleton[0:len(skeleton) - 1]
+        else:
+            skeleton = skeleton[0:21]
 
     # Count skeleton's CoG
     cx, cy = countSkeletonCoG(skeleton)
