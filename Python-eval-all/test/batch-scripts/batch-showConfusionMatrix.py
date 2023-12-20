@@ -24,6 +24,8 @@ def showConfusionMatrix(pathToInputFile: str):
         if len(splittedFileContent) > 3:
             predictedResultsStr = splittedFileContent[2]
             realResultsStr = splittedFileContent[3]
+            accuracyStr = splittedFileContent[4]
+            elapsedTimeStr = splittedFileContent[8]
 
             try:
                 # --Transforming str into list--
@@ -59,7 +61,8 @@ def showConfusionMatrix(pathToInputFile: str):
                     figsize=(11, 9)
                 )
 
-                plt.title(f"Confusion matrix. Options: {splittedFileContent[1].split(': ')[1]}")
+                plt.suptitle(f"Confusion matrix. Options: {splittedFileContent[1].split(': ')[1]}")
+                plt.title(f"{accuracyStr} | {elapsedTimeStr}")
                 plt.show()
 
             except (ErrorInputFileLetter, ErrorMismatchResultLen, ValueError) as e:
@@ -73,21 +76,29 @@ def showConfusionMatrix(pathToInputFile: str):
 if __name__ == "__main__":
     # --Option variables--
     resultFileName = "results_1.txt"  # default "results_1.txt"
+    searchInArchiveDir = False  # default False
 
     # --Read input arguments and set variables--
-    resultFileName = getArgumentOptionsBatch(sys.argv[1:],
-                                             resultFileName)
+    resultFileName, searchInArchiveDir = getArgumentOptionsBatch(sys.argv[1:],
+                                                                 resultFileName,
+                                                                 searchInArchiveDir)
 
     # --Check whether result file exists--
     print(f"1. Checking existence of result file ...")
-    pathToInputFile = join(dirname(dirname(__file__)), "output", resultFileName)  # .replace("\\", "\\\\")  replace one slash with 2 slashes
+    pathToInputFile = join(dirname(dirname(__file__)), "output")  # .replace("\\", "\\\\")  replace one slash with 2 slashes
 
+    if searchInArchiveDir:
+        pathToInputFile = join(pathToInputFile, "archive")
+
+    pathToInputFile = join(pathToInputFile, resultFileName)
+
+    # print(f"pathToInputFile: {pathToInputFile}")
     if not exists(pathToInputFile):
         print(f"File named \"{resultFileName}\" doesn't exist. Terminating batch script.")
         sys.exit(1)
 
     # --Preparing confusion matrix to show--
-    print(f"1. Preparing confusion matrix to show ...")
+    print(f"2. Preparing confusion matrix to show ...")
     showConfusionMatrix(pathToInputFile)
 
     print("-- END OF 'batch-showConfusionMatrix.py' SCRIPT --")
