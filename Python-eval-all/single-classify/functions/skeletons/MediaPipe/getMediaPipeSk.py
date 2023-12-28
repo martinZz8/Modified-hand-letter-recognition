@@ -71,8 +71,8 @@ def getMediaPipeSk(input_image_file_path: str,
     # -- Algorithm options --
     static_image_mode = True  # (default: False)
     max_num_hands = 1  # (default: 2)
-    min_detection_confidence = 0.2  # value in range [0; 1] (default: 0.5)
-    detection_confidence_top_cap = 0.5
+    min_detection_confidence = 0.5  # value in range [0; 1] (default: 0.5)
+    detection_confidence_bottom_cap = 0.2
     model_complexity = 1  # 0 or 1 (default 1)
 
     # -- Defining folder names -- (these folder have to be created!)
@@ -118,13 +118,13 @@ def getMediaPipeSk(input_image_file_path: str,
             # Print handedness, determine shape of image and copy the image
             # print('Handedness:', results.multi_handedness)
             if not results.multi_hand_landmarks:
-                print(f"Warning: No hand landmarks! 'min_detection_confidence'={min_detection_confidence}\nExtending value by 0.1")
-                min_detection_confidence += 0.1
+                print(f"Warning: No hand landmarks! 'min_detection_confidence'={min_detection_confidence}\nDecreasing value by 0.1")
+                min_detection_confidence -= 0.1
 
-                if min_detection_confidence > detection_confidence_top_cap:
-                    raise ErrorLandmarkDetection(f"Error: Couldn't recognize hand landmark at 'min_detection_confidence'<={detection_confidence_top_cap}")
+                if min_detection_confidence < detection_confidence_bottom_cap:
+                    raise ErrorLandmarkDetection(f"Error: Couldn't recognize hand landmark at 'min_detection_confidence'>={detection_confidence_bottom_cap}")
 
-                continue
+                # continue
             else:
                 processSkeletonRecognition = False
                 print(f"Got {len(results.multi_hand_landmarks[0].landmark)} points")
