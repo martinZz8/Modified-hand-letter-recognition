@@ -1,6 +1,9 @@
+import sys
 from os import listdir
-from os.path import isfile, join
+from os.path import dirname, isfile, join
 from tqdm.auto import tqdm
+
+sys.path.append(dirname(__file__))
 from formatInlineSkeleton import formatInlineSkeleton
 
 
@@ -9,7 +12,7 @@ def loadData(useMediaPipe: bool,
              availableLetters: list[str]):
     basePathName = "datasets"
     mediaPipePathName = "MediaPipe"
-    openPosePathName = "OpenPose"
+    openPosePathName = "OpenPose2"
     normalPathName = "normal"
     shiftedPathName = "shifted"
 
