@@ -10,6 +10,7 @@ from exceptions.ErrorPyTorchClassify import ErrorPyTorchClassify
 def getPyTorchClassification(inputSkeletonPath: str,
                              outputFileName: str,
                              useMediaPipe: bool,
+                             modelVersion: int,
                              useShiftedData: bool,
                              useCuda: bool):
     # Get output file name from "outputSkeletonPath"
@@ -36,6 +37,7 @@ def getPyTorchClassification(inputSkeletonPath: str,
     scriptName = "main-eval.py"
     scriptAddParameters = [
         '-m' if useMediaPipe else '-o',
+        f'-v {modelVersion}',
         '-s' if useShiftedData else '-S',
         '-c' if useCuda else '-C',
         '-i',
