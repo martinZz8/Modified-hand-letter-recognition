@@ -12,7 +12,7 @@ def loadData(useMediaPipe: bool,
              availableLetters: list[str]):
     basePathName = "datasets"
     mediaPipePathName = "MediaPipe"
-    openPosePathName = "OpenPose2"
+    openPosePathName = "OpenPose"
     normalPathName = "normal"
     shiftedPathName = "shifted"
 
