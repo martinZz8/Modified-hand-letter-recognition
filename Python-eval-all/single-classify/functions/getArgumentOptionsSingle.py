@@ -4,6 +4,7 @@ import sys
 
 def getArgumentOptionsSingle(argv,
                              useMediaPipe: bool,
+                             modelVersion: int,
                              useMatlabPreprocessing: bool,
                              useShiftedData: bool,
                              inputFolderPath: str,
@@ -19,8 +20,8 @@ def getArgumentOptionsSingle(argv,
 
     # Also note, that in second argument of "getopt.getopt()" method (short args) you should provice colon ':' after short argument, if it's with value, otherwise no.
     # Same thing goes to third argument (long args), but with equal sign '='.
-    opts, args = getopt.getopt(argv, "hmopPsSf:i:t:rRcC",
-                               ["help", "media-pipe", "open-pose", "preprocessing", "no-preprocessing", "shifted-data", "no-shifted-data", "input-folder-path=", "input-image=", "output-file=", "image-resize", "skeleton-rescale", "cuda", "cpu"])
+    opts, args = getopt.getopt(argv, "hmov:pPsSf:i:t:rRcC",
+                               ["help", "media-pipe", "open-pose", "--model-version=", "preprocessing", "no-preprocessing", "shifted-data", "no-shifted-data", "input-folder-path=", "input-image=", "output-file=", "image-resize", "skeleton-rescale", "cuda", "cpu"])
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):  # help
@@ -28,6 +29,7 @@ def getArgumentOptionsSingle(argv,
                   '-h, --help (help)\n'
                   '-m, --media-pipe (use MediaPipe - default)\n'
                   '-o, --open-pose (use OpenPose)\n'
+                  '-v, --model-version (specify version of model - default 1)\n'
                   '-p, --preprocessing (use Matlab preprocessing, skeleton transformation script - default)\n'
                   '-P, --no-preprocessing (do not use Matlab preprocessing, skeleton transformation script)\n'
                   '-s, --shifted-data (use shifted data - default)\n'
@@ -48,6 +50,15 @@ def getArgumentOptionsSingle(argv,
             sys.exit()
         elif opt in ("-m", "--media-pipe"):  # use MediaPipe data - default
             useMediaPipe = True
+        elif opt in ("-o", "--open-pose"):  # use OpenPose data
+            useMediaPipe = False
+        elif opt in ("-v", "--model-version"):  # specify version of model - default 1
+            # Check if "arg" string has integer representation of value (that could be casted to int)
+            arg = arg.strip()  # necessary strip to remove leading and trailing spaces
+            if arg.isnumeric():
+                modelVersion = int(arg)
+            else:
+                raise Exception("'-v' or '--model-version' parameter can have argument only of type integer")
         elif opt in ("-o", "--open-pose"):  # use OpenPose data
             useMediaPipe = False
         elif opt in ("-p", "--preprocessing"):  # use Matlab preprocessing, skeleton transformation script - default
@@ -79,6 +90,7 @@ def getArgumentOptionsSingle(argv,
 
     print(f"Used options:\n"
           f"- useMediaPipe = {useMediaPipe}\n"
+          f"- modelVersion = {modelVersion}\n"
           f"- useMatlabPreprocessing = {useMatlabPreprocessing}\n"
           f"- useShiftedData = {useShiftedData}\n"
           f"- inputFolderPath = {inputFolderPath}\n"
@@ -87,4 +99,4 @@ def getArgumentOptionsSingle(argv,
           f"- useImageResize = {useImageResize}\n"
           f"- useCuda = {useCuda}\n")
 
-    return useMediaPipe, useMatlabPreprocessing, useShiftedData, inputFolderPath, inputImageName, outputFileName, useImageResize, useCuda
+    return useMediaPipe, modelVersion, useMatlabPreprocessing, useShiftedData, inputFolderPath, inputImageName, outputFileName, useImageResize, useCuda
