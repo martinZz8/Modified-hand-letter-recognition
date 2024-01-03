@@ -50,6 +50,7 @@ def getArgumentOptionsEval(argv,
             useShiftedData = False
         elif opt in ("-v", "--model-version"):  # specify model version - default 1
             # Check if "arg" string has integer representation of value (that could be casted to int)
+            arg = arg.strip()
             if arg.isnumeric():
                 modelVersion = int(arg)
             else:
