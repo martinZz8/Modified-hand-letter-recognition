@@ -7,3 +7,4 @@ models/__pycache__
 outputModels
 batch-scripts/__pycache__
 batch-scripts/output
+batch-scripts/functions/__pycache__
