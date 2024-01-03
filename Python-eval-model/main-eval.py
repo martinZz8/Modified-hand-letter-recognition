@@ -106,7 +106,6 @@ def main(argv):
 
     # -- Save results to file --
     print("5. Saving results to file ...")
-    # TODO - prepare statistics str (with model_name, predicted letter and time)
     statisticsStr = f"Recognized class: {availableLetters[tracked_eval_values['y_single_pred']]}\n" \
                     f"Evaluation time (with {'CUDA' if useCuda else 'CPU'}): {tracked_eval_values['total_eval_time_model']:.2f} sec\n" \
                     f"Input file name: {inputSkeletonFileName}\n" \
