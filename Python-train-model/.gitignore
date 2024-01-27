@@ -6,5 +6,6 @@ functions/steps/__pycache__
 models/__pycache__
 outputModels
 batch-scripts/__pycache__
-batch-scripts/output
-batch-scripts/functions/__pycache__
+batch-scripts/compare-datasets/__pycache__
+batch-scripts/compare-datasets/output
+batch-scripts/compare-datasets/functions/__pycache__

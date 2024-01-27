@@ -1,7 +1,7 @@
 import sys
 from os.path import dirname, join, isfile
 
-sys.path.append(join(dirname(dirname(dirname(__file__))), "functions"))
+sys.path.append(join(dirname(dirname(dirname(dirname(__file__)))), "functions"))
 from formatInlineSkeleton import formatInlineSkeleton
 
 

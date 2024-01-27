@@ -28,8 +28,8 @@ def getBatchCompareArgumentOptions(argv,
                   '-s, --shifted-dataset (use shifted dataset - default)\n'
                   '-S, --normal-dataset (use non-shifted dataset)\n'
                   '-f, --first-dataset-version (specify first dataset version - default 1)\n'
-                  '-d, --second-dataset-version (specify second dataset version - default 2)\n'
-                  '-u, --output-file-name (specify output file name - default "", stands for "results.txt")\n\n'
+                  '-d, --second-dataset-version (specify second dataset version - default 2)\n'                  
+                  '-u, --output-file-name (specify output file name - default "", stands for "results.txt")\n\n'                  
                   'Also note, that you should use only one of the following pair values (otherwise it would be used the least provided):\n'
                   '-m, -o\n'
                   '-s, -S')
