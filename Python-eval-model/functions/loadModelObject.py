@@ -4,7 +4,8 @@ import torch
 
 def loadModelObject(useMediaPipe: bool,
                     useShiftedData: bool,
-                    modelVersion: int):
+                    modelVersion: int,
+                    losoPersonModel: int):
     # Specify path to model folders
     pathToModelFolders = join(
         dirname(
@@ -17,6 +18,9 @@ def loadModelObject(useMediaPipe: bool,
 
     # Specify model folder name
     modelObjectFolderName = "HSRecModel_"
+
+    if losoPersonModel > -1:
+        modelObjectFolderName += f"LOSO_{losoPersonModel}_"
 
     if useMediaPipe:
         modelObjectFolderName += "M"

@@ -13,9 +13,10 @@ from functions.metrics.calcPrecision import calcPrecision
 from functions.metrics.calcRecall import calcRecall
 from functions.metrics.calcF1Score import calcF1Score
 from functions.saveResultsToFile import saveResultsToFile
+from functions.doesImageNameContainsSpecificPersonNum import doesImageNameContainsSpecificPersonNum
 
 # Custom consts imports
-from consts.consts import combinedOptions
+from consts.consts import combinedOptions, combinedOptionsLoso
 
 # Custom exceptions imports
 from exceptions.ErrorMismatchResultLen import ErrorMismatchResultLen
@@ -26,73 +27,87 @@ def main(argv):
     # -- Consts (for eval model function) --
 
     # --Option variables--
-    selectedOptionIdx = 0  # default: 0
     inputImagesFolderPath: str = join(dirname(__file__), "input", "images")  # default: "<curr_workdir_path>/input/images"
+    isLosoTest: bool = False  # default: False
     useCuda: bool = False  # default: False
 
     # --Read input arguments and set variables--
-    selectedOptionIdx, inputImagesFolderPath, useCuda = getArgumentOptionsTest(argv,
-                                                                               selectedOptionIdx,
-                                                                               inputImagesFolderPath,
-                                                                               useCuda)
-
-    # Terminate script, when "selectedOptionIdx" is out of range <0,11>
-    if (selectedOptionIdx < 0) or (selectedOptionIdx > (len(combinedOptions)-1)):
-        print("Error during passing 'selectedOptionIdx' argument, it has to be in range of <0,11>")
-        sys.exit(1)
+    inputImagesFolderPath, isLosoTest, useCuda = getArgumentOptionsTest(argv,
+                                                                        inputImagesFolderPath,
+                                                                        isLosoTest,
+                                                                        useCuda)
+    # --Determine used options (based on "isLosoTest")--
+    usedOptions = combinedOptionsLoso if isLosoTest else combinedOptions
 
     # --Load image paths (list of dictionaries)--
     print(f"1. Getting images paths ...")
     loadedImagePaths = loadImagePaths(inputImagesFolderPath)
 
-    # --Performing recognitions--
-    print(f"2. Performing recognitions ...")
+    # --Performing recognitions (for each option)--
+    print(f"2. Performing recognitions (for each element in combinedOptions)...")
 
-    # Start the timer
-    evalTimeStart = timer()
+    # Note!: Change range of for loop when you want to omit some options.
+    # E.g.: for optionIdx in range(1, len(combinedOptions)) - if we want to omit first option
+    for optionIdx in range(len(usedOptions)):
+        print(f"**Current option idx: {optionIdx} of {len(usedOptions)-1}**")
 
-    # Perform recognitions
-    recognitionResults = []
-    for idx, imagePath in enumerate(tqdm(loadedImagePaths)):
-        resultOfTest = performTest(selectedOptionIdx, imagePath)
+        # Start the timer
+        evalTimeStart = timer()
 
-        recognitionResults.append({
-            'imageFileName': imagePath['imageFileName'],
-            'errorTermination': resultOfTest['errorTermination'],
-            'realLetter': resultOfTest['realLetter'],
-            'predictedLetter': resultOfTest['predictedLetter'],
-            'properClassify': resultOfTest['properClassify']
-        })
+        # Perform recognitions
+        recognitionResults = []
 
-    # Stop the timer
-    evalTimeStop = timer()
+        # --Determine used image data (based on "isLosoTest)--
+        imagePathsToUse = loadedImagePaths
 
-    # Count elapsed time
-    elapsedTime = evalTimeStop - evalTimeStart
+        currLosoPersonNum = None
+        if isLosoTest:
+            currLosoPersonNum = int(usedOptions[optionIdx][-1].split("-l")[1].strip())
+            imagePathsToUse = list(map(lambda x: doesImageNameContainsSpecificPersonNum(x["imageFileName"], currPersonNum), imagePathsToUse))
 
-    # --Calc accuracy and other params of results--
-    print(f"3. Calculating accuracy and other params ...")
-    if len(recognitionResults) > 0:
-        try:
-            calcedAcc, numOfErrorTerminations, numOfProperRecognitions = calcAccuracy(recognitionResults)
-            calcedPrecision = calcPrecision(recognitionResults)
-            calcedRecall = calcRecall(recognitionResults)
-            calcedF1Score = calcF1Score(recognitionResults)
-        except (ErrorMismatchResultLen, ErrorBlankTensor) as e:
-            print(f"{e} Terminated script.")
-            sys.exit(1)
+        for idx, imagePath in enumerate(tqdm(imagePathsToUse)):
+            resultOfTest = performTest(optionIdx, imagePath, currLosoPersonNum)
 
-        # --Save results to file--
-        print(f"4. Saving results to output file ...")
-        saveResultsToFile(recognitionResults,
-                          calcedAcc,
-                          calcedPrecision,
-                          calcedRecall,
-                          calcedF1Score,
-                          elapsedTime,
-                          numOfErrorTerminations,
-                          numOfProperRecognitions,
-                          combinedOptions[selectedOptionIdx])
+            recognitionResults.append({
+                'imageFileName': imagePath['imageFileName'],
+                'errorTermination': resultOfTest['errorTermination'],
+                'realLetter': resultOfTest['realLetter'],
+                'predictedLetter': resultOfTest['predictedLetter'],
+                'properClassify': resultOfTest['properClassify']
+            })
+
+        # Stop the timer
+        evalTimeStop = timer()
+
+        # Count elapsed time
+        elapsedTime = evalTimeStop - evalTimeStart
+
+        # --Calc accuracy and other params of results--
+        if len(recognitionResults) > 0:
+            print(f"3. Calculating accuracy and other params ...")
+            try:
+                calcedAcc, numOfErrorTerminations, numOfProperRecognitions = calcAccuracy(recognitionResults)
+                calcedPrecision = calcPrecision(recognitionResults)
+                calcedRecall = calcRecall(recognitionResults)
+                calcedF1Score = calcF1Score(recognitionResults)
+            except (ErrorMismatchResultLen, ErrorBlankTensor) as e:
+                print(f"{e} Terminated script.")
+                sys.exit(1)
+
+            # --Save results to file--
+            print(f"4. Saving results to output file ...")
+            saveResultsToFile(recognitionResults,
+                              calcedAcc,
+                              calcedPrecision,
+                              calcedRecall,
+                              calcedF1Score,
+                              elapsedTime,
+                              numOfErrorTerminations,
+                              numOfProperRecognitions,
+                              usedOptions[optionIdx])
+
+        if optionIdx != (len(usedOptions) - 1):
+            print("\n\n")
 
 
 if __name__ == "__main__":
