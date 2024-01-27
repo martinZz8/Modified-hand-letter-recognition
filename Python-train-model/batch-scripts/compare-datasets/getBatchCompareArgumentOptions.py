@@ -39,9 +39,9 @@ def getBatchCompareArgumentOptions(argv,
         elif opt in ("-o", "--open-pose"):  # use OpenPose - default
             useMediaPipe = False
         elif opt in ("-s", "--shifted-dataset"):  # use shifted dataset - default
-            shiftedDataset = True
+            useShiftedDataset = True
         elif opt in ("-S", "--normal-dataset"):  # use non-shifted dataset
-            shiftedDataset = False
+            useShiftedDataset = False
         elif opt in ("-f", "--first-dataset-version"):  # specify first dataset version - default 1
             # Check if "arg" string has integer representation of value (that could be casted to int)
             if arg.isnumeric():
