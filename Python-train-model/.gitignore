@@ -9,3 +9,5 @@ batch-scripts/__pycache__
 batch-scripts/compare-datasets/__pycache__
 batch-scripts/compare-datasets/output
 batch-scripts/compare-datasets/functions/__pycache__
+batch-scripts/train-loso/__pycache__
+batch-scripts/train-loso/functions/__pycache__
