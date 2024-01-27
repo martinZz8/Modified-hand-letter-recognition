@@ -7,7 +7,7 @@ sys.path.append(dirname(__file__))
 from consts.consts import combinedOptions
 
 
-def performTest(selectedOptionIdx, imagePath, resultFileName="results.txt"):
+def performTest(selectedOptionIdx, imagePath, currLosoPersonNum: int = None, resultFileName="results.txt"):
     # Specify output params
     errorTermination = True
     predictedLetter = "-"
@@ -24,7 +24,9 @@ def performTest(selectedOptionIdx, imagePath, resultFileName="results.txt"):
         '-i',
         imagePath['imageFileName'],
         '-t',
-        resultFileName
+        resultFileName,
+        '-l' if currLosoPersonNum is not None else '',
+        str(currLosoPersonNum) if currLosoPersonNum is not None else ''
     ]
     cwd = join(dirname(dirname(dirname(__file__))), "single-classify")
 

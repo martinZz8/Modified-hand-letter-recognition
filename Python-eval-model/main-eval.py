@@ -34,17 +34,19 @@ def main(argv):
     modelClassName: str = "UniversalModelV1"  # default: "UniversalModelV1"
     inputSkeletonFileName: str = "inputSkeletonMS_A6.txt"  # default: "inputSkeletonMS_A6.txt"
     outputFileName: str = ""  # default: "" stands for auto incremented file name
+    losoPersonModel: int = -1  # default: -1
     useCuda: bool = False  # default: False - it's faster for single evaluation to use CPU than GPU (moving data to GPU - CUDA costs more than evaluation benefits gained from it)
 
     # --Read input arguments and set variables--
-    useMediaPipe, useShiftedData, modelVersion, modelClassName, inputSkeletonFileName, outputFileName, useCuda = getArgumentOptionsEval(argv,
-                                                                                                                                        useMediaPipe,
-                                                                                                                                        useShiftedData,
-                                                                                                                                        modelVersion,
-                                                                                                                                        modelClassName,
-                                                                                                                                        inputSkeletonFileName,
-                                                                                                                                        outputFileName,
-                                                                                                                                        useCuda)
+    useMediaPipe, useShiftedData, modelVersion, modelClassName, inputSkeletonFileName, outputFileName, losoPersonModel, useCuda = getArgumentOptionsEval(argv,
+                                                                                                                                                         useMediaPipe,
+                                                                                                                                                         useShiftedData,
+                                                                                                                                                         modelVersion,
+                                                                                                                                                         modelClassName,
+                                                                                                                                                         inputSkeletonFileName,
+                                                                                                                                                         outputFileName,
+                                                                                                                                                         losoPersonModel,
+                                                                                                                                                         useCuda)
         # --Set device agnostic code (if user wants to and it's available)--
     deviceStr = "cpu"
     if useCuda and torch.cuda.is_available():
@@ -82,7 +84,7 @@ def main(argv):
         raise Exception("Model is 'None'")
 
     # Load desired model object
-    modelObject, modelObjectFolderName = loadModelObject(useMediaPipe, useShiftedData, modelVersion)
+    modelObject, modelObjectFolderName = loadModelObject(useMediaPipe, useShiftedData, modelVersion, losoPersonModel)
 
     # Insert loaded model object into our model. Also change device type
     model.load_state_dict(modelObject)

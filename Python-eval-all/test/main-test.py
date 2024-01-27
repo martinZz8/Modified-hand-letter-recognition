@@ -13,9 +13,10 @@ from functions.metrics.calcPrecision import calcPrecision
 from functions.metrics.calcRecall import calcRecall
 from functions.metrics.calcF1Score import calcF1Score
 from functions.saveResultsToFile import saveResultsToFile
+from functions.doesImageNameContainsSpecificPersonNum import doesImageNameContainsSpecificPersonNum
 
 # Custom consts imports
-from consts.consts import combinedOptions
+from consts.consts import combinedOptions, combinedOptionsLoso
 
 # Custom exceptions imports
 from exceptions.ErrorMismatchResultLen import ErrorMismatchResultLen
@@ -27,12 +28,17 @@ def main(argv):
 
     # --Option variables--
     inputImagesFolderPath: str = join(dirname(__file__), "input", "images")  # default: "<curr_workdir_path>/input/images"
+    isLosoTest: bool = False  # default: False
     useCuda: bool = False  # default: False
 
     # --Read input arguments and set variables--
-    inputImagesFolderPath, useCuda = getArgumentOptionsTest(argv,
-                                                            inputImagesFolderPath,
-                                                            useCuda)
+    inputImagesFolderPath, isLosoTest, useCuda = getArgumentOptionsTest(argv,
+                                                                        inputImagesFolderPath,
+                                                                        isLosoTest,
+                                                                        useCuda)
+    # --Determine used options (based on "isLosoTest")--
+    usedOptions = combinedOptionsLoso if isLosoTest else combinedOptions
+
     # --Load image paths (list of dictionaries)--
     print(f"1. Getting images paths ...")
     loadedImagePaths = loadImagePaths(inputImagesFolderPath)
@@ -42,16 +48,25 @@ def main(argv):
 
     # Note!: Change range of for loop when you want to omit some options.
     # E.g.: for optionIdx in range(1, len(combinedOptions)) - if we want to omit first option
-    for optionIdx in range(len(combinedOptions)):
-        print(f"**Current option idx: {optionIdx} of {len(combinedOptions)-1}**")
+    for optionIdx in range(len(usedOptions)):
+        print(f"**Current option idx: {optionIdx} of {len(usedOptions)-1}**")
 
         # Start the timer
         evalTimeStart = timer()
 
         # Perform recognitions
         recognitionResults = []
-        for idx, imagePath in enumerate(tqdm(loadedImagePaths)):
-            resultOfTest = performTest(optionIdx, imagePath)
+
+        # --Determine used image data (based on "isLosoTest)--
+        imagePathsToUse = loadedImagePaths
+
+        currLosoPersonNum = None
+        if isLosoTest:
+            currLosoPersonNum = int(usedOptions[optionIdx][-1].split("-l")[1].strip())
+            imagePathsToUse = list(map(lambda x: doesImageNameContainsSpecificPersonNum(x["imageFileName"], currPersonNum), imagePathsToUse))
+
+        for idx, imagePath in enumerate(tqdm(imagePathsToUse)):
+            resultOfTest = performTest(optionIdx, imagePath, currLosoPersonNum)
 
             recognitionResults.append({
                 'imageFileName': imagePath['imageFileName'],
@@ -89,9 +104,9 @@ def main(argv):
                               elapsedTime,
                               numOfErrorTerminations,
                               numOfProperRecognitions,
-                              combinedOptions[optionIdx])
+                              usedOptions[optionIdx])
 
-        if optionIdx != (len(combinedOptions) - 1):
+        if optionIdx != (len(usedOptions) - 1):
             print("\n\n")
 
 

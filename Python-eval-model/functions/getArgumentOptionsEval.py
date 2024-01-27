@@ -2,6 +2,11 @@ import getopt
 import sys
 
 
+# Custom exception declaration (only used and caught in this file)
+class WrongLOSOPersonInteger(Exception):
+    pass
+
+
 def getArgumentOptionsEval(argv,
                            useMediaPipe: bool,
                            useShiftedData: bool,
@@ -9,6 +14,7 @@ def getArgumentOptionsEval(argv,
                            modelClassName: str,
                            inputSkeletonFileName: str,
                            outputFileName: str,
+                           losoPersonModel: int,
                            useCuda: bool):
     # --Read input arguments and set variables--
     # Note:
@@ -18,8 +24,8 @@ def getArgumentOptionsEval(argv,
 
     # Also note, that in second argument of "getopt.getopt()" method (short args) you should provice colon ':' after short argument, if it's with value, otherwise no.
     # Same thing goes to third argument (long args), but with equal sign '='.
-    opts, args = getopt.getopt(argv, "hmosSv:n:i:u:cC",
-                               ["help", "media-pipe", "open-pose", "shifted-data", "no-shifted-data", "model-version=", "model-class-name=", "input-skeleton=", "output-file=", "cuda", "cpu"])
+    opts, args = getopt.getopt(argv, "hmosSv:n:i:u:l:cC",
+                               ["help", "media-pipe", "open-pose", "shifted-data", "no-shifted-data", "model-version=", "model-class-name=", "input-skeleton=", "output-file=", "loso-person-model=", "cuda", "cpu"])
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):  # help
@@ -33,6 +39,7 @@ def getArgumentOptionsEval(argv,
                   '-n, --model-class-name (specify model class name - available: "UniversalModelV1"; default "UniversalModelV1")\n'
                   '-i, --input-skeleton (specify input skeleton file name - default "inputSkeletonMS_A6.txt")\n'
                   '-u, --output-file (specify output file name - default "" stands for auto incremented file name)\n'
+                  '-l, --loso-person-model (specify used LOSO person model - default -1, stands for standard model, without LOSO)\n'
                   '-c, --cuda (use cuda if available)\n'
                   '-C, --cpu (use cpu - default)\n\n'
                   'Also note, that you should use only one of the following pair values (otherwise it would be used the least provided):\n'
@@ -61,6 +68,23 @@ def getArgumentOptionsEval(argv,
             inputSkeletonFileName = arg
         elif opt in ("-u", "--output-file"):  # specify output file name - default "" stands for auto incremented file name
             outputFileName = arg
+        elif opt in ("-l", "--loso-person-model"):  # specify used LOSO person model - default -1, stands for standard model, without LOSO
+            # Check if "arg" string has integer representation of value (that could be casted to int)
+            doesThrowWrongNumberException = False
+            try:
+                if arg.isnumeric():
+                    intArg = int(arg)
+                    if intArg >= -1:
+                        losoPersonModel = intArg
+                    else:
+                        doesThrowWrongNumberException = True
+                else:
+                    doesThrowWrongNumberException = True
+
+                if doesThrowWrongNumberException:
+                    raise WrongLOSOPersonInteger()
+            except WrongLOSOPersonInteger:
+                raise Exception("'-l' or '--loso-person-model' parameter can have argument only of type integer (from -1 to infinity)")
         elif opt in ("-c", "--cuda"):  # use cuda if available
             useCuda = True
         elif opt in ("-C", "--cpu"):  # use cpu - default
@@ -73,6 +97,7 @@ def getArgumentOptionsEval(argv,
           f"- modelClassName = {modelClassName}\n"
           f"- inputSkeletonFileName = {inputSkeletonFileName}\n"
           f"- outputFileName = {outputFileName}\n"
+          f"- losoPersonModel = {losoPersonModel}\n"
           f"- useCuda = {useCuda}\n")
 
-    return useMediaPipe, useShiftedData, modelVersion, modelClassName, inputSkeletonFileName, outputFileName, useCuda
+    return useMediaPipe, useShiftedData, modelVersion, modelClassName, inputSkeletonFileName, outputFileName, losoPersonModel, useCuda
