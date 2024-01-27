@@ -63,7 +63,7 @@ def main(argv):
         currLosoPersonNum = None
         if isLosoTest:
             currLosoPersonNum = int(usedOptions[optionIdx][-1].split("-l")[1].strip())
-            imagePathsToUse = list(map(lambda x: doesImageNameContainsSpecificPersonNum(x["imageFileName"], currPersonNum), imagePathsToUse))
+            imagePathsToUse = list(map(lambda x: doesImageNameContainsSpecificPersonNum(x["imageFileName"], currLosoPersonNum), imagePathsToUse))
 
         for idx, imagePath in enumerate(tqdm(imagePathsToUse)):
             resultOfTest = performTest(optionIdx, imagePath, currLosoPersonNum)
