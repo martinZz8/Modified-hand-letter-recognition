@@ -9,7 +9,8 @@ from loadSkeleton import loadSkeleton
 def compareTwoDatasets(pathToFirstDataset: str,
                        pathToSecondDataset: str):
     # --Initialize aggregated values--
-    resultStr = ""
+    resultStr = f"Path to first compared dataset: {pathToFirstDataset}\n" \
+                f"Path to second compared dataset: {pathToSecondDataset}\n\n"
 
     # --Determine letters of MediaPipe and OpenPose folders--
     fLetters = set([f for f in listdir(pathToFirstDataset) if isdir(join(pathToFirstDataset, f))])
