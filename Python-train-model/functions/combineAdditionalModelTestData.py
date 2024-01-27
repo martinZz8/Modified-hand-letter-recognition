@@ -31,7 +31,7 @@ def combineAdditionalModelTestData(allDrawnTestIdxs: list,
         if idx != (numOfAllElements - 1):
             predictedValues += "\n"
 
-    return f"AllDrawnTestIdxs (each row corresponds to letter ordered in alphabetical order):\n{allDrawnTestIdxsStr}\n\n" \
+    return f"AllDrawnPersonNums (each row corresponds to letter ordered in alphabetical order, columns stands for person nums 1-11):\n{allDrawnTestIdxsStr}\n\n" \
            f"True and predicted values (during test):\n" \
            f"Model predicted well {numOfPredictedGood} of {numOfAllElements} elements ({(numOfPredictedGood / numOfAllElements)*100:.2f}% acc)\n" \
            f"{predictedValues}"

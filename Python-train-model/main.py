@@ -43,15 +43,19 @@ def main(argv):
     # --Option variables--
     useMediaPipe: bool = True  # default: True
     useShiftedData: bool = True  # default: True
+    losoPersonTester: int = -1  # default: -1
     useCuda: bool = True  # default: True
     modelRepeats: int = 1  # default: 1
+    showGraphs: bool = True  # default: True
 
     # --Read input arguments and set variables--
-    useMediaPipe, useShiftedData, useCuda, modelRepeats = getArgumentOptions(argv,
-                                                                             useMediaPipe,
-                                                                             useShiftedData,
-                                                                             useCuda,
-                                                                             modelRepeats)
+    useMediaPipe, useShiftedData, losoPersonTester, useCuda, modelRepeats, showGraphs = getArgumentOptions(argv,
+                                                                                                           useMediaPipe,
+                                                                                                           useShiftedData,
+                                                                                                           losoPersonTester,
+                                                                                                           useCuda,
+                                                                                                           modelRepeats,
+                                                                                                           showGraphs)
 
     # --Set device agnostic code (if user wants to and it's available)--
     deviceStr = "cpu"
@@ -73,7 +77,7 @@ def main(argv):
 
         # -- Split data into training and testing values --
         # Note! We also shuffle train and test data (3rd parameter is set to True)
-        XTrain, YTrain, XTest, YTest, allDrawnTestIdxs = splitTrainTestData(loadedData, testDataFactor, True)
+        XTrain, YTrain, XTest, YTest, allDrawnTestIdxs = splitTrainTestData(loadedData, losoPersonTester, testDataFactor, True)
         # print(f"XTrain: {len(XTrain)}\nYTrain: {len(YTrain)}\nXTest: {len(XTest)}\nYTest: {len(YTest)}")
         # print(f"allDrawnTestIdxs: {allDrawnTestIdxs}")
 
@@ -89,8 +93,8 @@ def main(argv):
         # -- Turn data into tensors --
         # XTrainTen = torch.tensor(XTrain) #.to(deviceStr)
         # YTrainTen = torch.tensor(YTrain) #.to(deviceStr)
-        XTestTen = torch.tensor(XTest)  # .to(deviceStr)
-        YTestTen = torch.tensor(YTest)  # .to(deviceStr)
+        XTestTen = torch.tensor(XTest)  # ".to(deviceStr)" is performed inside "testStep" method
+        YTestTen = torch.tensor(YTest)  # ".to(deviceStr)" is preformed inside "testStep" method
 
         # -- Create model --
         if torchManualSeedVal is not None:
@@ -159,12 +163,13 @@ def main(argv):
     bestModelData = determineBestModel(allModelDatas)
 
     if bestModelData is not None:
-        # -- Plot best results --
-        # Plot the loss curves
-        plotLossCurves(bestModelData["tracked_train_values_li"])
+        if showGraphs:
+            # -- Plot best results --
+            # Plot the loss curves
+            plotLossCurves(bestModelData["tracked_train_values_li"])
 
-        # Plot the accuracy
-        plotAccuracy(bestModelData["tracked_train_values_li"])
+            # Plot the accuracy
+            plotAccuracy(bestModelData["tracked_train_values_li"])
 
         # -- Perform best model save --
         print("5. Saving best model to file ...")
@@ -173,6 +178,9 @@ def main(argv):
         outputDirName = "outputModels"
         modelNameToSave = "HSRecModel_"
         modelExtensionName = ".pth"
+
+        if losoPersonTester > -1:
+            modelNameToSave += f"LOSO_{losoPersonTester}_"
 
         if useMediaPipe:
             modelNameToSave += "M"

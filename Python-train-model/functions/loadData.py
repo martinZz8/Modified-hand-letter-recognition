@@ -7,6 +7,23 @@ sys.path.append(dirname(__file__))
 from formatInlineSkeleton import formatInlineSkeleton
 
 
+# Helper functions
+# Get num of person from str
+def getPersonNum(strToWork: str):
+    splittedFileName = strToWork.split("_")
+
+    if len(splittedFileName) == 2:
+        firstPartWithNum = splittedFileName[0]
+        splittedFirstPartWithNum = firstPartWithNum.split("P")
+
+        if len(splittedFirstPartWithNum) == 2:
+            numOfPerson = splittedFirstPartWithNum[1]
+
+            if numOfPerson.isnumeric():
+                return int(numOfPerson)
+    return 0
+
+
 def loadData(useMediaPipe: bool,
              useShiftedData: bool,
              availableLetters: list[str]):
@@ -34,12 +51,18 @@ def loadData(useMediaPipe: bool,
 
         onlyFiles = [f for f in listdir(pathToLetters) if isfile(join(pathToLetters, f))]
 
-        loadedSingleLetterSkeletons = [[] for i in range(len(onlyFiles))]
+        loadedSingleLetterSkeletons = [{"personNum": 0, "skeleton": []} for i in range(len(onlyFiles))]
+
         for idx2, fileName in enumerate(onlyFiles):
+            personNum = getPersonNum(fileName)
+
             with open(join(pathToLetters, fileName), "r") as file:
                 fileContent = file.read()
-                loadedSingleLetterSkeletons[idx2] = formatInlineSkeleton(fileContent)
-
+                inlineSkeleton = formatInlineSkeleton(fileContent)
+                loadedSingleLetterSkeletons[idx2] = {
+                    "personNum": personNum,
+                    "skeleton": inlineSkeleton
+                }
         loadedSkeletons[idx] = loadedSingleLetterSkeletons
 
     return loadedSkeletons
