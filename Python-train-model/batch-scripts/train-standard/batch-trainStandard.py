@@ -1,6 +1,6 @@
 from os.path import dirname
-
 from functions.runTrainOfStandardModel import runTrainOfStandardModel
+from functions.doesModelFolderExists import doesModelFolderExists
 
 
 def main():
@@ -17,6 +17,11 @@ def main():
 
     for sr in skeletonReceivers:
         for sp in shiftParams:
+            if doesModelFolderExists(sr, sp):
+                print(f"Bypass of model train with params:\n"
+                      f"- skeletonReceiver: {sr}\n"
+                      f"- shiftParam: {sp}")
+                continue
             runTrainOfStandardModel(sr, sp, pathToExec, scriptPythonVersion, scriptName, cwd)
 
 
