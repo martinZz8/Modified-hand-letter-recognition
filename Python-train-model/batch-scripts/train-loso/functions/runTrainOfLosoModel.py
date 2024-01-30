@@ -1,13 +1,13 @@
 import subprocess
 
 
-def runTrainOfModel(skeletonReceiver,
-                    personNum,
-                    shiftParam,
-                    pathToExec,
-                    scriptPythonVersion,
-                    scriptName,
-                    cwd):
+def runTrainOfLosoModel(skeletonReceiver,
+                        personNum,
+                        shiftParam,
+                        pathToExec,
+                        scriptPythonVersion,
+                        scriptName,
+                        cwd):
     print(f"Started learning model with options:\n"
           f"-skeletonReceiver: {skeletonReceiver},\n"
           f"-personNum: {personNum},\n"
