@@ -5,8 +5,8 @@ clc;
 
 %% Variables
 % Varaible, if user wants to remove last row in OpenPose (extra, 22th row)
-defaultRemoveLastRowOpenPose = false;
-if ~exist('removeLastRowOpenPose','var')    
+defaultRemoveLastRowOpenPose = true; % default true
+if ~exist('removeLastRowOpenPose','var')
     removeLastRowOpenPose = defaultRemoveLastRowOpenPose;
     disp("Setting default 'removeLastRowOpenPose' to: " + removeLastRowOpenPose);
 else
@@ -18,6 +18,19 @@ else
     disp("Using passed 'removeLastRowOpenPose': " + removeLastRowOpenPose);
 end
 
+% Varaible, if user wants to shift skeleton, when center is in coords (0,0)
+defaultShiftSkeleton = true; % default true
+if ~exist('shiftSkeleton','var')
+    shiftSkeleton = defaultShiftSkeleton;
+    disp("Setting default 'shiftSkeleton' to: " + shiftSkeleton);
+else
+    % Convert string to boolean
+    if ~islogical(shiftSkeleton)
+        shiftSkeleton = str2num(shiftSkeleton);
+    end
+
+    disp("Using passed 'shiftSkeleton': " + shiftSkeleton);
+end
 %% load data
 inFName = "input";
 outFName = "output";
@@ -40,7 +53,7 @@ letterNames = [...
     'W'; ...
     'Y'; ...
 ];
-personNums = 1:11;
+personNums = 1:12;
 
 % Perform shift on every cloud and save it to new location
 for currInputFolderNameIdx=1:length(inputDataFolderNames)
@@ -59,7 +72,11 @@ for currInputFolderNameIdx=1:length(inputDataFolderNames)
 
                 % If skeleton isn't empty, shift it
                 if ~isempty(pcSkeleton)
-                    pcShiftedSkeleton = shiftCloud(pcSkeleton);
+                    if shiftSkeleton
+                        pcShiftedSkeleton = shiftCloud(pcSkeleton);
+                    else
+                        pcShiftedSkeleton = pcSkeleton;
+                    end
     
                     % Create folder if doesn't exist
                     saveFolderPath = currOutputFolderName + "/" + letterNames(currLetterNameIdx);
