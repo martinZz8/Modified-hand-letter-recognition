@@ -28,11 +28,12 @@ def compareTwoDatasets(pathToFirstDataset: str,
         # --Determine letters of MediaPipe and OpenPose folders--
         fPointClouds = set([f for f in listdir(fPath) if isfile(join(fPath, f))])
         sPointClouds = set([f for f in listdir(sPath) if isfile(join(sPath, f))])
+        intersectedPointClouds = fPointClouds.intersection(sPointClouds)
 
-        if fPointClouds != sPointClouds:
-            raise Exception(f"Error: point clouds in path '{fPath}' doesn't match point clouds in second path '{sPath}'")
+        if len(intersectedPointClouds) == 0:
+            raise Exception(f"Error: intersection of point clouds in path '{fPath}' and '{sPath}' is blank")
 
-        for pointCloudName in fPointClouds:
+        for pointCloudName in intersectedPointClouds:
             fPointCloudName = join(fPath, pointCloudName)
             sPointCloudName = join(sPath, pointCloudName)
 
