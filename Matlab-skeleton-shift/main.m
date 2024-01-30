@@ -5,7 +5,7 @@ clc;
 
 %% Variables
 % Varaible, if user wants to remove last row in OpenPose (extra, 22th row)
-defaultRemoveLastRowOpenPose = true; % default false
+defaultRemoveLastRowOpenPose = true; % default true
 if ~exist('removeLastRowOpenPose','var')
     removeLastRowOpenPose = defaultRemoveLastRowOpenPose;
     disp("Setting default 'removeLastRowOpenPose' to: " + removeLastRowOpenPose);
@@ -53,7 +53,7 @@ letterNames = [...
     'W'; ...
     'Y'; ...
 ];
-personNums = 1:11;
+personNums = 1:12;
 
 % Perform shift on every cloud and save it to new location
 for currInputFolderNameIdx=1:length(inputDataFolderNames)

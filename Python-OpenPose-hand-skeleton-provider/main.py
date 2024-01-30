@@ -28,7 +28,6 @@ def main():
             mkdir(output_letter_folder)
 
         # Process each file individually
-        mkdirCounter = 0
         for idx, file_name in enumerate(file_names):
             print(f"{idx+1}) Processing file: {file_name} ...")
             # Get file_name without extension
