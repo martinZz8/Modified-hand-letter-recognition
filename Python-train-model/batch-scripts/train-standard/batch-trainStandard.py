@@ -1,12 +1,11 @@
 from os.path import dirname
 
-from functions.runTrainOfLosoModel import runTrainOfLosoModel
+from functions.runTrainOfStandardModel import runTrainOfStandardModel
 
 
 def main():
     # --Consts--
     skeletonReceivers = ["-m", "-o"]
-    personNums = [str(x) for x in range(1, 13)]
     shiftParams = ["-s", "-S"]
 
     # Setup some parameters for training model subprocess
@@ -17,9 +16,8 @@ def main():
     cwd = dirname(dirname(dirname(__file__)))
 
     for sr in skeletonReceivers:
-        for perNum in personNums:
-            for sp in shiftParams:
-                runTrainOfLosoModel(sr, perNum, sp, pathToExec, scriptPythonVersion, scriptName, cwd)
+        for sp in shiftParams:
+            runTrainOfStandardModel(sr, sp, pathToExec, scriptPythonVersion, scriptName, cwd)
 
 
 if __name__ == "__main__":
