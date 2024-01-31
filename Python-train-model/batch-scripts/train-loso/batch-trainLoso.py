@@ -25,15 +25,17 @@ def main():
     for sr in skeletonReceivers:
         for perNum in personNums:
             for sp in shiftParams:
+                usedDatasetVersion = determineUsedDatasetVersion(sr, mediaPipeDatasetVersion, openPoseDatasetVersion)
+
                 if doesModelFolderExists(sr, sp, perNum):
                     print(f"Bypass of model train with params:\n"
                           f"- skeletonReceiver: {sr}\n"
-                          f"- datasetVersion: {determineUsedDatasetVersion(sr, mediaPipeDatasetVersion, openPoseDatasetVersion)}\n"
+                          f"- datasetVersion: {usedDatasetVersion}\n"
                           f"- shiftParam: {sp}\n"
                           f"- personNum: {perNum}")
                     continue
                 runTrainOfLosoModel(sr,
-                                    determineUsedDatasetVersion(sr, mediaPipeDatasetVersion, openPoseDatasetVersion),
+                                    usedDatasetVersion,
                                     perNum,
                                     sp,
                                     pathToExec,
