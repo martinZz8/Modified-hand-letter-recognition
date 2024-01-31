@@ -16,7 +16,7 @@ def doesModelFolderExists(skeletonReceiver: str,
     pathToOutputModelsDir = join(dirname(dirname(dirname(dirname(__file__)))), "outputModels")
     modelFolderName = f"HSRecModel_{f'LOSO_{personNum}_' if personNum is not None else ''}" \
                       f"{'M' if skeletonReceiver == '-m' else 'O'}" \
-                      f"{'S' if shiftParams == 's' else 'O'}" \
+                      f"{'S' if shiftParams == '-s' else 'O'}" \
                       f"{modelVersion if modelVersion is not None else ''}"
     pathToSpecificFolder = join(pathToOutputModelsDir, modelFolderName)
 
