@@ -20,14 +20,16 @@ def main():
 
     for sr in skeletonReceivers:
         for sp in shiftParams:
+            usedDatasetVersion = determineUsedDatasetVersion(sr, mediaPipeDatasetVersion, openPoseDatasetVersion)
+
             if doesModelFolderExists(sr, sp):
                 print(f"Bypass of model train with params:\n"
                       f"- skeletonReceiver: {sr}\n"
-                      f"- datasetVersion: {determineUsedDatasetVersion(sr, mediaPipeDatasetVersion, openPoseDatasetVersion)}\n"
+                      f"- datasetVersion: {usedDatasetVersion}\n"
                       f"- shiftParam: {sp}")
                 continue
             runTrainOfStandardModel(sr,
-                                    determineUsedDatasetVersion(sr, mediaPipeDatasetVersion, openPoseDatasetVersion),
+                                    usedDatasetVersion,
                                     sp,
                                     pathToExec,
                                     scriptPythonVersion,
