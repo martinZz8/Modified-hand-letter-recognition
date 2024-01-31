@@ -42,6 +42,7 @@ def main(argv):
 
     # --Option variables--
     useMediaPipe: bool = True  # default: True
+    versionOfDataset: int = 1  # default:  1
     useShiftedData: bool = True  # default: True
     losoPersonTester: int = -1  # default: -1
     useCuda: bool = True  # default: True
@@ -49,13 +50,14 @@ def main(argv):
     showGraphs: bool = True  # default: True
 
     # --Read input arguments and set variables--
-    useMediaPipe, useShiftedData, losoPersonTester, useCuda, modelRepeats, showGraphs = getArgumentOptions(argv,
-                                                                                                           useMediaPipe,
-                                                                                                           useShiftedData,
-                                                                                                           losoPersonTester,
-                                                                                                           useCuda,
-                                                                                                           modelRepeats,
-                                                                                                           showGraphs)
+    useMediaPipe, versionOfDataset, useShiftedData, losoPersonTester, useCuda, modelRepeats, showGraphs = getArgumentOptions(argv,
+                                                                                                                             useMediaPipe,
+                                                                                                                             versionOfDataset,
+                                                                                                                             useShiftedData,
+                                                                                                                             losoPersonTester,
+                                                                                                                             useCuda,
+                                                                                                                             modelRepeats,
+                                                                                                                             showGraphs)
 
     # --Set device agnostic code (if user wants to and it's available)--
     deviceStr = "cpu"
@@ -66,7 +68,7 @@ def main(argv):
 
     # --Load data--
     print("1. Loading data ...")
-    loadedData = loadData(useMediaPipe, useShiftedData, availableLetters)
+    loadedData = loadData(useMediaPipe, useShiftedData, versionOfDataset, availableLetters)
     # print(f"loadedData: {len(loadedData), len(loadedData[0]), len(loadedData[0][0]), len(loadedData[0][0][0])}")
 
     # -- Perform model repeats "modelRepeats" times

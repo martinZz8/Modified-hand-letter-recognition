@@ -1,12 +1,13 @@
 import subprocess
 
 
-def runTrainOfStandardModel(skeletonReceiver,
-                            shiftParam,
-                            pathToExec,
-                            scriptPythonVersion,
-                            scriptName,
-                            cwd):
+def runTrainOfStandardModel(skeletonReceiver: str,
+                            datasetVersion: int,
+                            shiftParam: str,
+                            pathToExec: str,
+                            scriptPythonVersion: str,
+                            scriptName: str,
+                            cwd: str):
     print(f"Started learning model with options:\n"
           f"-skeletonReceiver: {skeletonReceiver},\n"
           f"-shiftParam: {shiftParam}\n")
@@ -14,6 +15,8 @@ def runTrainOfStandardModel(skeletonReceiver,
     # Setup parameters for training model subprocess
     scriptAddParameters = [
         skeletonReceiver,
+        '-v',
+        str(datasetVersion),
         shiftParam,
         '-G'
     ]

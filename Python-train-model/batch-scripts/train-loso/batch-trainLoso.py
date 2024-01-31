@@ -4,13 +4,16 @@ from functions.runTrainOfLosoModel import runTrainOfLosoModel
 
 sys.path.append(join(dirname(dirname(__file__)), "train-standard"))
 from functions.doesModelFolderExists import doesModelFolderExists
+from functions.determineUsedDatasetVersion import determineUsedDatasetVersion
 
 
 def main():
     # --Consts--
     skeletonReceivers = ["-m", "-o"]
-    personNums = [str(x) for x in range(1, 13)]
+    personNums = [x for x in range(1, 13)]
     shiftParams = ["-s", "-S"]
+    mediaPipeDatasetVersion = 1
+    openPoseDatasetVersion = 2
 
     # Setup some parameters for training model subprocess
     pathToExec = "py"
@@ -25,10 +28,18 @@ def main():
                 if doesModelFolderExists(sr, sp, perNum):
                     print(f"Bypass of model train with params:\n"
                           f"- skeletonReceiver: {sr}\n"
+                          f"- datasetVersion: {determineUsedDatasetVersion(sr, mediaPipeDatasetVersion, openPoseDatasetVersion)}\n"
                           f"- shiftParam: {sp}\n"
                           f"- personNum: {perNum}")
                     continue
-                runTrainOfLosoModel(sr, perNum, sp, pathToExec, scriptPythonVersion, scriptName, cwd)
+                runTrainOfLosoModel(sr,
+                                    determineUsedDatasetVersion(sr, mediaPipeDatasetVersion, openPoseDatasetVersion),
+                                    perNum,
+                                    sp,
+                                    pathToExec,
+                                    scriptPythonVersion,
+                                    scriptName,
+                                    cwd)
 
 
 if __name__ == "__main__":

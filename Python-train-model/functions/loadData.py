@@ -26,6 +26,7 @@ def getPersonNum(strToWork: str):
 
 def loadData(useMediaPipe: bool,
              useShiftedData: bool,
+             versionOfDataset: int,
              availableLetters: list[str]):
     basePathName = "datasets"
     mediaPipePathName = "MediaPipe"
@@ -43,6 +44,8 @@ def loadData(useMediaPipe: bool,
             pathToData = join(basePathName, shiftedPathName, openPosePathName)
         else:
             pathToData = join(basePathName, normalPathName, openPosePathName)
+
+    pathToData = f"{pathToData}{versionOfDataset}" if versionOfDataset > 1 else pathToData
 
     loadedSkeletons = [[] for i in range(len(availableLetters))]
 
