@@ -10,6 +10,7 @@ def runTrainOfStandardModel(skeletonReceiver: str,
                             cwd: str):
     print(f"Started learning model with options:\n"
           f"-skeletonReceiver: {skeletonReceiver},\n"
+          f"-datasetVersion: {datasetVersion},\n"
           f"-shiftParam: {shiftParam}\n")
 
     # Setup parameters for training model subprocess
