@@ -11,6 +11,7 @@ def runTrainOfLosoModel(skeletonReceiver: str,
                         cwd: str):
     print(f"Started learning model with options:\n"
           f"-skeletonReceiver: {skeletonReceiver},\n"
+          f"-datasetVersion: {datasetVersion},\n"
           f"-personNum: {personNum},\n"
           f"-shiftParam: {shiftParam}\n")
 
