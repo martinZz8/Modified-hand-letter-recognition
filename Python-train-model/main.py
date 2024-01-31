@@ -68,7 +68,7 @@ def main(argv):
 
     # --Load data--
     print("1. Loading data ...")
-    loadedData = loadData(useMediaPipe, useShiftedData, availableLetters)
+    loadedData = loadData(useMediaPipe, useShiftedData, versionOfDataset, availableLetters)
     # print(f"loadedData: {len(loadedData), len(loadedData[0]), len(loadedData[0][0]), len(loadedData[0][0][0])}")
 
     # -- Perform model repeats "modelRepeats" times
