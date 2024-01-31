@@ -3,7 +3,7 @@ def doesImageNameContainsSpecificPersonNum(imageName: str,
     splittedImageName = imageName.split("_")
 
     if len(splittedImageName) == 2:
-        splittedImageName2 = splittedImageName.split("P")
+        splittedImageName2 = splittedImageName[0].split("P")
 
         if len(splittedImageName2) == 2:
             imagePersonNumStr = splittedImageName2[1]
