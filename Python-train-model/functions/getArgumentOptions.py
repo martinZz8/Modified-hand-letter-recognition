@@ -2,13 +2,18 @@ import getopt
 import sys
 
 
-# Custom exception declaration (only used and caught in this file)
+# Custom exception declarations (only used and caught in this file)
 class WrongLOSOPersonInteger(Exception):
+    pass
+
+
+class WrongDatasetVersionInteger(Exception):
     pass
 
 
 def getArgumentOptions(argv,
                        useMediaPipe: bool,
+                       versionOfDataset: int,
                        useShiftedData: bool,
                        losoPersonTester: int,
                        useCuda: bool,
@@ -22,9 +27,8 @@ def getArgumentOptions(argv,
 
     # Also note, that in second argument of "getopt.getopt()" method (short args) you should provice colon ':' after short argument, if it's with value, otherwise no.
     # Same thing goes to third argument (long args), but with equal sign '='.
-    opts, args = getopt.getopt(argv, "hmosSl:cCr:gG",
-                               ["help", "media-pipe", "open-pose", "shifted-data", "no-shifted-data", "loso-person-tester=", "cuda", "cpu",
-                                "model-repeats=", "show-graphs", "hide-graphs"])
+    opts, args = getopt.getopt(argv, "hmov:sSl:cCr:gG",
+                               ["help", "media-pipe", "open-pose", "dataset-version=", "shifted-data", "no-shifted-data", "loso-person-tester=", "cuda", "cpu", "model-repeats=", "show-graphs", "hide-graphs"])
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):  # help
@@ -32,6 +36,7 @@ def getArgumentOptions(argv,
                   '-h, --help (help)\n'
                   '-m, --media-pipe (use MediaPipe - default)\n'
                   '-o, --open-pose (use OpenPose)\n'
+                  '-v, --dataset-version (version of used dataset - default 1)\n'
                   '-s, --shifted-data (use shifted data - default)\n'
                   '-S, --no-shifted-data (use non-shifted data)\n'
                   '-l, --loso-person-tester (specify, which person has to be LOSO tester, other persons are used to train model - default -1, which stands for not using LOSO dataset)\n'
@@ -50,6 +55,23 @@ def getArgumentOptions(argv,
             useMediaPipe = True
         elif opt in ("-o", "--open-pose"):  # use OpenPose data
             useMediaPipe = False
+        elif opt in ("-v", "--dataset-version"):  # version of used dataset - default 1
+            # Check if "arg" string has integer representation of value (that could be casted to int)
+            doesThrowWrongNumberException = False
+            try:
+                if arg.isnumeric():
+                    intArg = int(arg)
+                    if intArg >= 1:
+                        versionOfDataset = intArg
+                    else:
+                        doesThrowWrongNumberException = True
+                else:
+                    doesThrowWrongNumberException = True
+
+                if doesThrowWrongNumberException:
+                    raise WrongDatasetVersionInteger()
+            except WrongDatasetVersionInteger:
+                raise Exception("'-v' or '--dataset-version' parameter can have argument only of type integer (from 1 to infinity)")
         elif opt in ("-s", "--shifted-data"):  # use shifted data - default
             useShiftedData = True
         elif opt in ("-S", "--no-shifted-data"):  # use non-shifted data
@@ -88,10 +110,11 @@ def getArgumentOptions(argv,
 
     print(f"Used options:\n"
           f"- useMediaPipe = {useMediaPipe}\n"
+          f"- versionOfDataset = {versionOfDataset}\n"
           f"- useShiftedData = {useShiftedData}\n"
           f"- losoPersonTester = {losoPersonTester}{'(don''t use LOSO)' if losoPersonTester <= -1 else ''}\n"
           f"- useCuda = {useCuda}\n"
           f"- modelRepeats = {modelRepeats}\n",
           f"- showGraphs = {showGraphs}\n")
 
-    return useMediaPipe, useShiftedData, losoPersonTester, useCuda, modelRepeats, showGraphs
+    return useMediaPipe, versionOfDataset, useShiftedData, losoPersonTester, useCuda, modelRepeats, showGraphs

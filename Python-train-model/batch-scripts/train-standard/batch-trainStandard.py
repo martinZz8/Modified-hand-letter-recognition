@@ -1,12 +1,15 @@
 from os.path import dirname
 from functions.runTrainOfStandardModel import runTrainOfStandardModel
 from functions.doesModelFolderExists import doesModelFolderExists
+from functions.determineUsedDatasetVersion import determineUsedDatasetVersion
 
 
 def main():
     # --Consts--
     skeletonReceivers = ["-m", "-o"]
     shiftParams = ["-s", "-S"]
+    mediaPipeDatasetVersion = 1
+    openPoseDatasetVersion = 2
 
     # Setup some parameters for training model subprocess
     pathToExec = "py"
@@ -20,9 +23,16 @@ def main():
             if doesModelFolderExists(sr, sp):
                 print(f"Bypass of model train with params:\n"
                       f"- skeletonReceiver: {sr}\n"
+                      f"- datasetVersion: {determineUsedDatasetVersion(sr, mediaPipeDatasetVersion, openPoseDatasetVersion)}\n"
                       f"- shiftParam: {sp}")
                 continue
-            runTrainOfStandardModel(sr, sp, pathToExec, scriptPythonVersion, scriptName, cwd)
+            runTrainOfStandardModel(sr,
+                                    determineUsedDatasetVersion(sr, mediaPipeDatasetVersion, openPoseDatasetVersion),
+                                    sp,
+                                    pathToExec,
+                                    scriptPythonVersion,
+                                    scriptName,
+                                    cwd)
 
 
 if __name__ == "__main__":
