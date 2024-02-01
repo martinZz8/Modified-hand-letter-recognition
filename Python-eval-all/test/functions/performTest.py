@@ -3,11 +3,7 @@ from os.path import dirname, join
 import subprocess
 
 
-sys.path.append(dirname(__file__))
-from consts.consts import combinedOptions
-
-
-def performTest(selectedOptionIdx, imagePath, currLosoPersonNum: int = None, resultFileName="results.txt"):
+def performTest(selectedOptionList, imagePath, currLosoPersonNum: int = None, resultFileName="results.txt"):
     # Specify output params
     errorTermination = True
     predictedLetter = "-"
@@ -18,7 +14,7 @@ def performTest(selectedOptionIdx, imagePath, currLosoPersonNum: int = None, res
     pathToExec = "py"
     scriptPythonVersion = "-3"
     scriptName = "main-single.py"
-    scriptAddParameters = combinedOptions[selectedOptionIdx] + [
+    scriptAddParameters = selectedOptionList + [
         '-f',
         imagePath['folderPath'],
         '-i',
