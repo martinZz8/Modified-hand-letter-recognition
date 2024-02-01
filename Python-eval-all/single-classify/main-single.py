@@ -1,4 +1,5 @@
 # Standard imports
+from typing import Optional
 import sys
 from os.path import isfile, dirname, join, exists
 from os import mkdir
@@ -29,6 +30,7 @@ def main(argv):
     # --Option variables--
     useMediaPipe: bool = True  # default: True
     modelVersion: int = 1  # default: 1
+    losoModelPerson: Optional[int] = None  # default: None
     useMatlabPreprocessing: bool = True  # default: True
     useShiftedData: bool = True  # default: True
     inputFolderPath: str = ""  # default: ""
@@ -38,16 +40,17 @@ def main(argv):
     useCuda: bool = False  # default: False - it's faster for single evaluation to use CPU than GPU (moving data to GPU - CUDA costs more than evaluation benefits gained from it)
 
     # --Read input arguments and set variables--
-    useMediaPipe, modelVersion, useMatlabPreprocessing, useShiftedData, inputFolderPath, inputImageName, outputFileName, useImageResize, useCuda = getArgumentOptionsSingle(argv,
-                                                                                                                                                                            useMediaPipe,
-                                                                                                                                                                            modelVersion,
-                                                                                                                                                                            useMatlabPreprocessing,
-                                                                                                                                                                            useShiftedData,
-                                                                                                                                                                            inputFolderPath,
-                                                                                                                                                                            inputImageName,
-                                                                                                                                                                            outputFileName,
-                                                                                                                                                                            useImageResize,
-                                                                                                                                                                            useCuda)
+    useMediaPipe, modelVersion, losoModelPerson, useMatlabPreprocessing, useShiftedData, inputFolderPath, inputImageName, outputFileName, useImageResize, useCuda = getArgumentOptionsSingle(argv,
+                                                                                                                                                                                             useMediaPipe,
+                                                                                                                                                                                             modelVersion,
+                                                                                                                                                                                             losoModelPerson,
+                                                                                                                                                                                             useMatlabPreprocessing,
+                                                                                                                                                                                             useShiftedData,
+                                                                                                                                                                                             inputFolderPath,
+                                                                                                                                                                                             inputImageName,
+                                                                                                                                                                                             outputFileName,
+                                                                                                                                                                                             useImageResize,
+                                                                                                                                                                                             useCuda)
 
     # Specify "inputImageFilePath"
     if inputFolderPath != "":
@@ -128,6 +131,7 @@ def main(argv):
                                                           outputFileName,
                                                           useMediaPipe,
                                                           modelVersion,
+                                                          losoModelPerson,
                                                           useShiftedData,
                                                           useCuda)
     except ErrorPyTorchClassify as e:

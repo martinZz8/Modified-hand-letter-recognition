@@ -1,3 +1,4 @@
+from typing import Optional
 import sys
 from os.path import dirname, join
 import shutil
@@ -11,6 +12,7 @@ def getPyTorchClassification(inputSkeletonPath: str,
                              outputFileName: str,
                              useMediaPipe: bool,
                              modelVersion: int,
+                             losoModelPerson: Optional[int],
                              useShiftedData: bool,
                              useCuda: bool):
     # Get output file name from "outputSkeletonPath"
@@ -37,7 +39,10 @@ def getPyTorchClassification(inputSkeletonPath: str,
     scriptName = "main-eval.py"
     scriptAddParameters = [
         '-m' if useMediaPipe else '-o',
-        f'-v {modelVersion}',
+        '-v',
+        str(modelVersion),
+        '-l' if losoModelPerson is not None else '',
+        str(losoModelPerson) if losoModelPerson is not None else '',
         '-s' if useShiftedData else '-S',
         '-c' if useCuda else '-C',
         '-i',
