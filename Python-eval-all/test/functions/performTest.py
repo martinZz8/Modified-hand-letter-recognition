@@ -24,6 +24,8 @@ def performTest(selectedOptionList, imagePath, currLosoPersonNum: int = None, re
         '-l' if currLosoPersonNum is not None else '',
         str(currLosoPersonNum) if currLosoPersonNum is not None else ''
     ]
+    scriptAddParameters = list(filter(lambda x: len(x) > 0, scriptAddParameters))
+
     cwd = join(dirname(dirname(dirname(__file__))), "single-classify")
 
     # -- Run "main-single.py" script --

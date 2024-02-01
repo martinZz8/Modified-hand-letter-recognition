@@ -50,6 +50,7 @@ def getPyTorchClassification(inputSkeletonPath: str,
         '-u',
         outputFileName
     ]
+    scriptAddParameters = list(filter(lambda x: len(x) > 0, scriptAddParameters))
 
     # Run Python classifier script
     # Also note, how to throw stdout from subprocess away: https://stackoverflow.com/questions/7082623/suppress-output-from-subprocess-popen
