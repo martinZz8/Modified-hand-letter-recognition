@@ -66,7 +66,7 @@ def main(argv):
             imagePathsToUse = list(filter(lambda x: doesImageNameContainsSpecificPersonNum(x["imageFileName"], currLosoPersonNum), imagePathsToUse))
 
         for idx, imagePath in enumerate(tqdm(imagePathsToUse)):
-            resultOfTest = performTest(optionIdx, imagePath, currLosoPersonNum)
+            resultOfTest = performTest(usedOptions[optionIdx], imagePath, currLosoPersonNum)
 
             recognitionResults.append({
                 'imageFileName': imagePath['imageFileName'],
