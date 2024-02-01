@@ -106,7 +106,7 @@ def getArgumentOptionsSingle(argv,
           f"- useShiftedData = {useShiftedData}\n"
           f"- inputFolderPath = {inputFolderPath}\n"
           f"- inputImageName = {inputImageName}\n"
-          f"- outputFileName = {inputImageName}\n"
+          f"- outputFileName = {outputFileName}\n"
           f"- useImageResize = {useImageResize}\n"
           f"- useCuda = {useCuda}\n")
 
