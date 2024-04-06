@@ -70,14 +70,14 @@ def normalizeValuesOwnRowCol(vals,
 
       Args:
         vals (2D arr of floats): 2D array of values to normalize
-        a_fir (double): new maximum value of first element in row
-        b_fir (double):  new maximum value of first element in row
-        a_sec (double): new maximum value of second (or further) element in row
-        b_sec (double):  new maximum value of second (or further) element in row
-        x_min_fir (double): old maximum value of first element in row
-        x_max_fir (double):  old maximum value of first element in row
-        x_min_sec (double): old maximum value of second (or further) element in row
-        x_max_sec (double):  old maximum value of second (or further) element in row
+        a_fir (double): new minimum value of first element in row
+        b_fir (double): new maximum value of first element in row
+        a_sec (double): new minimum value of second (or further) element in row
+        b_sec (double): new maximum value of second (or further) element in row
+        x_min_fir (double): old minimum value of first element in row
+        x_max_fir (double): old maximum value of first element in row
+        x_min_sec (double): old minimum value of second (or further) element in row
+        x_max_sec (double): old maximum value of second (or further) element in row
 
       Returns:
         2D array of normalized values
