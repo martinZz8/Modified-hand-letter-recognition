@@ -1,4 +1,4 @@
-To run project in virtualenv, do those steps:
+-- To run project in virtualenv, do those steps: --
 1. Install "virtualenv" via pip
 Note: You can also use "venv" instead of "virtualenv". But "virtualenv" is more popular and powerful than "venv".
 
@@ -24,15 +24,14 @@ Note3: Don't use "py -3 -m pip install ...". Here our python.exe is in folder "e
 	So just simply use "python -m pip install ..."
 		
 5. Run prepared scipt with:
-	"python src/main.py" (or change directory of main file)
+	"python app.py" (or change directory of main file)
 	
 Note: Server runs at url: "localhost:5000"
 
 6. Deactivate virtualenv (while beeing in active environment):
 	"deactivate"
 
-
-Additional:
+-- Additional: --
 a) Creation of database:
 - Enable virtualenv (3rd point),
 - Move to "src" folder,
