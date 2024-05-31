@@ -1,0 +1,8 @@
+# folders
+.idea/
+env/
+migrations/
+*__pycache__/
+
+# files
+.env
